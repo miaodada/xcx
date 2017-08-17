@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper>
+
+
+	<insert id="addUser" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id" >
+		insert into user(name,token,head_img) values(#{name},#{token},#{headImg})
+	
+	</insert>
+	
+	
+	<update id="updateUser" parameterType="java.util.Map" >
+		update user set name=#{name} , head_img = #{headImg} where id =#{userId}
+	</update >
+	
+	<select id="getUser" parameterType="java.util.Map" resultType="com.qiyu.bean.User"> 
+		select id ,name ,token ,head_img  headImg from user where token =#{token}
+	</select>
+
+</mapper>
