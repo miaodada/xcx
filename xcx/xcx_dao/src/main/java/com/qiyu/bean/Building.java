@@ -38,6 +38,9 @@ public class Building implements Serializable {
 	private String signUpNum ; // 报名人数
 	private String storeNum ; // 门店数量
 	
+	private List<FileInfo> logoList ; // 大楼Logo集合
+	private List<FileInfo> picList ; // 大楼配图集合
+	
 	public Long getId() {
 		return id;
 	}
@@ -191,7 +194,6 @@ public class Building implements Serializable {
 	public void setSignUpNum(String signUpNum) {
 		this.signUpNum = signUpNum;
 	}
-	
 	
 	
 }

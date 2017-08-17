@@ -4,35 +4,27 @@
 	<resultMap type="com.qiyu.bean.Building" id="BaseResultMap">
 			<id column="id" property="id" jdbcType="BIGINT" />
 		   <result column="name"  property="name" jdbcType="VARCHAR" />
-			<result column="short_name"  property="shortName"  jdbcType="VARCHAR" />
+			<result column="shortName"  property="shortName"  jdbcType="VARCHAR" />
 			<result column="province"  property="province"    jdbcType="VARCHAR" />
 			<result column="city"     property="city"        jdbcType="VARCHAR" />
-			<result column="business_type"      property="businessType"    jdbcType="INTEGER" />
-			<result column="acreagebusiness_time"  property="acreagbusinessTime"    jdbcType="BIGINT" />
-			<result column="start_time"     property="startTime"    jdbcType="BIGINT" />
-			<result column="end_time"    property="endTime"      jdbcType="BIGINT" />
+			<result column="businessType"      property="businessType"    jdbcType="INTEGER" />
+			<result column="acreagebusinessTime"  property="acreagbusinessTime"    jdbcType="BIGINT" />
+			<result column="startTime"     property="startTime"    jdbcType="BIGINT" />
+			<result column="endTime"    property="endTime"      jdbcType="BIGINT" />
 			<result column="adress"     property="adress"     jdbcType="VARCHAR" />
-			<result column="parking_lot"     property="parkingLot"    jdbcType="VARCHAR" />
+			<result column="parkingLot"     property="parkingLot"    jdbcType="VARCHAR" />
 			<result column="atm"      property="atm"     jdbcType="VARCHAR" />
-			<result column="information_desk"     property="informationDesk"  jdbcType="VARCHAR" />
+			<result column="informationDesk"     property="informationDesk"  jdbcType="VARCHAR" />
 			<result column="stair"      property="stair"     jdbcType="VARCHAR" />
 			<result column="staircase"  property="staircase"   jdbcType="VARCHAR" />
 			<result column="square"         property="square"     jdbcType="VARCHAR" />
 			<result column="atrium"      property="atrium"     jdbcType="VARCHAR" />
-			<result column="room_of_mom_and_infant"   property="roomOfMomAndInfant"    jdbcType="VARCHAR" />
+			<result column="roomOfMomAndInfant"   property="roomOfMomAndInfant"    jdbcType="VARCHAR" />
 			<result column="logo"        property="logo"   jdbcType="VARCHAR" />
 			<result column="pic"           property="pic"  jdbcType="VARCHAR" />
 			<result column="introduce"      property="introduce"     jdbcType="VARCHAR" />
 		</resultMap>
-		
-		<resultMap type="com.qiyu.bean.Building" id="getBuildingtMap" extends=""BaseResultMap">
-			<association property="logoList" column="logo" select="getfile"></association>
-			<association property="picList" column="pic" select="getfile"></association>
-		</resultMap>
-		
-		<select id="getfile" parameterType="java.util.Map" resultType="com.qiyu.bean.FileInfo">
-			select id,url from file where find_in_set(id,#{ids})		
-		</select>
+
 	<insert id="addBuilding" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
 		insert into building(name) values(#{name})
 	</insert>
@@ -69,15 +61,7 @@
 	</update>
 	
 	<select id="getBuilding" parameterType="java.util.Map" resultMap="">
-		select name,short_name ,province,city  ,business_type,
-			DATE_FORMAT(acreagebusiness_time,'%m-%d-%Y %H-%i-%s')acreagebusiness_time,
-			DATE_FORMAT(start_time,'%m-%d-%Y %H-%i-%s')start_time,
-			DATE_FORMAT(end_time,'%m-%d-%Y %H-%i-%s')end_time,
-			adress,parking_lot,atm,information_desk,stair,staircase,square,atrium,
-			room_of_mom_and_infant,logo,pic,
-			introduce from building b
-		
-		where id ={id}
+		select * from building where id ={id}
 		
 	
 	</select>

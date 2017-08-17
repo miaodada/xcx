@@ -40,7 +40,7 @@ public class AdminServiceImpl  implements IAdminService {
 	@Transactional
 	public void addAdmin(Map<String, Object> map) {
 		String level=map.get("level")==null?null:map.get("level").toString();
-		if(StringUtils.isBlank(level)||!(level.equals("1")||!level.equals("2"))){
+		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
 			throw new BizException("430", "无法添加权限用户");
 		}
 		if(StringUtils.isBlank(map.get("account"))||StringUtils.isBlank(map.get("pwd"))||StringUtils.isBlank(map.get("name"))){
@@ -58,7 +58,7 @@ public class AdminServiceImpl  implements IAdminService {
 			int num = adminDao.getAccountAlready(map);
 			
 			if(num>0){
-				throw new BizException("430", "账号或名字已存在");
+				throw new BizException("430", "名字已存在");
 			}
 			
 				if(level.equals("1")){
@@ -86,7 +86,7 @@ public class AdminServiceImpl  implements IAdminService {
 		if(StringUtils.isBlank(map.get("pwd"))){
 			throw new BizException("430", "未输入密码");
 		}
-		if(StringUtils.isBlank(map.get("pitchOnId"))){
+		if(StringUtils.isBlank(map.get("id"))){
 			throw new BizException("430", "缺少选中用户id");
 		}
 		try{
@@ -99,7 +99,7 @@ public class AdminServiceImpl  implements IAdminService {
 	
 	@Override
 	public void delAdmin(Map<String, Object> map) {
-		if(StringUtils.isBlank(map.get("pitchOnId"))){
+		if(StringUtils.isBlank(map.get("id"))){
 			throw new BizException("430", "缺少选中用户id");
 		}
 		try{

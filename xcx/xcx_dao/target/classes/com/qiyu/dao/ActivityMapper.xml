@@ -34,7 +34,7 @@
 		
 		
 		<delete id="delActivity" parameterType="java.util.Map">
-			delete from activity where id =#{id} and <if test="level !=null and ( level ==2 or level == '2')"> and buildingId =#{adminBuildingId} </if>	
+			delete from activity where id =#{id}	
 		</delete>
 		
 		
