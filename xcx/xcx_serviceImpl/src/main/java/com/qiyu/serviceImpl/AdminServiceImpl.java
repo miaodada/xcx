@@ -61,12 +61,12 @@ public class AdminServiceImpl  implements IAdminService {
 				throw new BizException("430", "名字已存在");
 			}
 			
-				if(level.equals("1")){
-					buildingDao.addBuilding(map);
-					//map 返回大楼新增ID
-					map.put("storeId",0);
-					map.put("buildingId",map.get("id"));
-					adminDao.addAdmin(map);
+			if(level.equals("1")){
+				buildingDao.addBuilding(map);
+				//map 返回大楼新增ID
+				map.put("storeId",0);
+				map.put("buildingId",map.get("id"));
+				adminDao.addAdmin(map);
 					
 			}
 			if(level.equals("2")){
@@ -83,6 +83,10 @@ public class AdminServiceImpl  implements IAdminService {
 	
 	@Override
 	public void updatePwd(Map<String, Object> map) {
+		String level=map.get("level")==null?null:map.get("level").toString();
+		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+			throw new BizException("430", "无限权限修改用户密码");
+		}
 		if(StringUtils.isBlank(map.get("pwd"))){
 			throw new BizException("430", "未输入密码");
 		}
@@ -99,6 +103,11 @@ public class AdminServiceImpl  implements IAdminService {
 	
 	@Override
 	public void delAdmin(Map<String, Object> map) {
+		String level=map.get("level")==null?null:map.get("level").toString();
+		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+			throw new BizException("430", "无限权限删除用户");
+		}
+		
 		if(StringUtils.isBlank(map.get("id"))){
 			throw new BizException("430", "缺少选中用户id");
 		}

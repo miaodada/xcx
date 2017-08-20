@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper>
+<mapper namespace="com.qiyu.dao.IActivityDao">
 		<resultMap type="com.qiyu.bean.Activity" id="BaseResultMap">
 			<id column="id" property="id" jdbcType="BIGINT" />
 		    <result column="title" property="title" jdbcType="VARCHAR" />
-		    <result column="buildingId" property="buildingId" jdbcType="BIGINT" />
-		    <result column="storeId" property="storeId" jdbcType="BIGINT" />
-		    <result column="startTime" property="startTime" jdbcType="TIMESTAMP" />
-		    <result column="endTime" property="endTime" jdbcType="TIMESTAMP" />
+		    <result column="building_id" property="buildingId" jdbcType="BIGINT" />
+		    <result column="store_id" property="storeId" jdbcType="BIGINT" />
+		    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+		    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
 		    <result column="phone" property="phone" jdbcType="VARCHAR" />
-		    <result column="reminderTime" property="reminderTime" jdbcType="VARCHAR" />
+		    <result column="reminder_time" property="reminderTime" jdbcType="VARCHAR" />
 		    <result column="pic" property="pic" jdbcType="VARCHAR" />
 		    <result column="introduce" property="introduce" jdbcType="VARCHAR" />
 		    <result column="tag" property="tag" jdbcType="VARCHAR" />
-		    <result column="cover" property="cover" jdbcType="TIMESTAMP" />
+		    <result column="cover" property="cover" jdbcType="VARCHAR" />
 		</resultMap>
 		
 		<resultMap type="com.qiyu.bean.Activity" id="getActivityMap" extends="BaseResultMap">
-		    <association property=""></association>
+			<association property="picList" column="pic" select="getfile"></association>
 		</resultMap>
 		
 		
@@ -34,7 +34,7 @@
 		
 		
 		<delete id="delActivity" parameterType="java.util.Map">
-			delete from activity where id =#{id} and <if test="level !=null and ( level ==2 or level == '2')"> and buildingId =#{adminBuildingId} </if>	
+			delete from activity where id =#{id} and <if test="level !=null and ( level ==2 or level == '2')"> and building_id =#{buildingId} </if>	
 		</delete>
 		
 		
@@ -48,11 +48,11 @@
 				<if test="tag !=null"> tag =#{tag}, </if>
 				<if test="cover !=null"> cover =#{cover}, </if>
 			</set>	
-			where id =#{id}
+			where id =#{id} and <if test="level !=null and ( level ==2 or level == '2')"> and building_id =#{buildingId} </if>
 		</update>
 		
 		<select id="getActivity" parameterType="java.util.Map" resultMap="getActivityMap">
-			select from activity where id =#{id}
+			select * from activity where id =#{id}
 		</select>
 
 </mapper>

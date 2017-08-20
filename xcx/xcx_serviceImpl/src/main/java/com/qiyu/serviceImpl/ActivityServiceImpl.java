@@ -64,6 +64,10 @@ public class ActivityServiceImpl  implements IActivityService {
 	
 	@Override
 	public void delActivity(Map<String, Object> map) {
+		String level=map.get("level")==null?null:map.get("level").toString();
+		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+			throw new BizException("430", "无限权限删除活动");
+		}
 		if(StringUtils.isBlank(map.get("id"))){
 			throw new BizException("430", "缺少选中活动id");
 		}
@@ -73,6 +77,10 @@ public class ActivityServiceImpl  implements IActivityService {
 	
 	@Override
 	public void updateActivity(Map<String, Object> map) {
+		String level=map.get("level")==null?null:map.get("level").toString();
+		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+			throw new BizException("430", "无限权限修改活动");
+		}
 		if(StringUtils.isBlank(map.get("id"))){
 			throw new BizException("430", "缺少选中活动id");
 		}

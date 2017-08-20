@@ -41,7 +41,7 @@ public class BuildingServiceImpl  implements IBuildingService {
 		String initUpdate=map.get("initUpdate")==null?null:map.get("initUpdate").toString();
 		
 		
-		if(!(level.equals("2")&&initUpdate.equals("0"))&&!level.equals("1")){
+		if(StringUtils.isBlank(level)||level.equals("2")&&!initUpdate.equals("0")||!level.equals("1")&&!level.equals("2")){
 			throw new BizException("430", "无权限修改大楼信息");
 		}
 		
