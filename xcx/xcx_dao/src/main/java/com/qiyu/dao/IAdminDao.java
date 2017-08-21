@@ -30,6 +30,12 @@ public interface IAdminDao {
 	void updatePwd(Map<String, Object> map);
 	
 	/**
+	 * 修改管理员
+ 	 * 
+	 */
+	void updateAdmin(Map<String, Object> map);
+	
+	/**
 	 * 删除管理员
  	 * 
 	 */

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qiyu.bean.Building;
+import com.qiyu.dao.IAdminDao;
 import com.qiyu.dao.IBuildingDao;
 import com.qiyu.dao.IUserDao;
 import com.qiyu.service.IAdminService;
@@ -28,6 +29,8 @@ public class BuildingServiceImpl  implements IBuildingService {
 	private static Logger logger = LoggerFactory.getLogger(BuildingServiceImpl.class);
 	@Autowired
 	private IBuildingDao buildingDao;
+	@Autowired
+	private IAdminDao adminDao;
 	
 	
 
@@ -44,11 +47,15 @@ public class BuildingServiceImpl  implements IBuildingService {
 		if(StringUtils.isBlank(level)||level.equals("2")&&!initUpdate.equals("0")||!level.equals("1")&&!level.equals("2")){
 			throw new BizException("430", "无权限修改大楼信息");
 		}
-		
-		if(StringUtils.isBlank("id")){
+		//1J管理员修改需要大楼ID 2。第一次修改，取session
+		if(StringUtils.isBlank("id")&&level.equals("1")){
 			throw new BizException("430", "缺少选中大楼id");
+		} else if(level.equals("2")){
+			map.put("id", map.get("buildingId"));
 		}
+		map.put("storeId", 0);
 		buildingDao.updateBuilding(map);
+		adminDao.updateAdmin(map);
 		
 	}
 	
