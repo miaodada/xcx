@@ -1,6 +1,7 @@
 package com.qiyu.bean;
 
 import java.io.Serializable;
+import java.util.List;
 
 //大楼对象
 public class Building implements Serializable {
