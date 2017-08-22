@@ -100,6 +100,24 @@ public class ActivityServiceImpl  implements IActivityService {
 		return activity;
 		
 	}
+	
+	@Override
+	public void isTop(Map<String, Object> map) {
+		if(StringUtils.isBlank(map.get("id"))){
+			throw new BizException("430", "缺少选中活动id");
+		}
+		String level=map.get("level")==null?null:map.get("level").toString();
+		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+			throw new BizException("430", "无限权");
+		}
+		try{
+			map.put("isTop", 1);
+		 activityDao.updateActivity(map);
+		}catch(Exception e){
+			throw new BizException("440", "置顶失败");
+		}
+		
+	}
 }
 
 

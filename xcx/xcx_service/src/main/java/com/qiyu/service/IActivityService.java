@@ -40,11 +40,13 @@ public interface IActivityService {
 	
 	 /**
      * 获取活动详情
-     * @author 维斯
-     * @param map
-     * @return
-     * 2016年11月4日  下午3:25:04
      */
 	Activity getActivity(Map<String, Object> map);
+	
+	 /**
+     * 置顶
+     */
+	
+	void isTop(Map<String, Object> map);
 	
 }

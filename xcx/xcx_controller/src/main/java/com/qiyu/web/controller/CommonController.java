@@ -17,6 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.qiyu.web.vo.Result;
+import com.qiyu.bean.Admin;
 import com.qiyu.bean.User;
 import com.qiyu.dao.IUserDao;
 import com.qiyu.util.common.ParameterUtil;
@@ -39,6 +40,135 @@ public class CommonController {
 	
 
 	private static Logger logger = Logger.getLogger(CommonController.class);
+	
+	@RequestMapping("/adminLogin")
+	@SuppressWarnings("unchecked")
+	public void adminLogin(HttpServletRequest request, String method, String param, HttpServletResponse response) {
+		logger.info("----------------------------login.do---START----------------------------------------");
+		logger.info("----------------------------method:" + method + "----"+request.getSession().getAttribute("user")+"------------------------------------");
+		logger.info("----------------------------param:" + param + "----------------------------------------");
+		// 参数转成Map
+		Map<String, Object> params = (Map<String, Object>) ParameterUtil.parseObj(param, Map.class);
+		//flag为1为登出
+		Object flagObject=params.get("flag");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setContentType("text/html;charset=UTF-8");
+		
+		if(flagObject!=null&&flagObject.toString().equals("1")){
+			logger.info("----------------------------登出清除session中的user----------------------------------");
+			request.getSession().setAttribute("admin",null);
+			Result result = new Result();
+			result.setCode(Response.LOGINOUT_SUCESS.getErrorCode());
+			result.setMessage(Response.LOGINOUT_SUCESS.getMsg());
+			String reslutJSON = JSONObject.toJSONString(result);
+			try {
+				response.getWriter().write(reslutJSON);
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.error(e.getMessage(), e);
+			}
+		}else{
+			//登录
+			try {
+				String[] methods = method.split("/");
+				String serviceName = methods[0] + "Service";
+				String methodName = methods[1];
+				// 获取service对象
+				WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
+				Object service = webApplicationContext.getBean(serviceName);
+
+				Result result = this.getResult(service.getClass().getInterfaces()[0], service, methodName, params);
+				
+				Admin admin = null;
+
+					if (result != null && result.getData() != null) {
+						admin = (Admin)result.getData();
+					}
+					// 存储登录的员工信息
+					request.getSession().setAttribute("admin", admin);
+					request.getSession().setMaxInactiveInterval(30*60);
+				   System.out.println("---------xcx登录id"+ "---------"+request.getSession().getId()+"-------------------");
+					
+					result.setCode(Response.LOGIN_SUCESS.getErrorCode());
+					result.setMessage(Response.LOGIN_SUCESS.getMsg());
+					
+					
+					String reslutJSON = JSONObject.toJSONString(result);
+					response.getWriter().write(reslutJSON);
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e.getMessage(), e);
+			}
+		}
+		logger.info("----------------------------api.do---END----------------------------------------");
+	}
+	
+	@RequestMapping("/userLogin")
+	@SuppressWarnings("unchecked")
+	public void userLogin(HttpServletRequest request, String method, String param, HttpServletResponse response) {
+		logger.info("----------------------------login.do---START----------------------------------------");
+		logger.info("----------------------------method:" + method + "----"+request.getSession().getAttribute("user")+"------------------------------------");
+		logger.info("----------------------------param:" + param + "----------------------------------------");
+		// 参数转成Map
+		Map<String, Object> params = (Map<String, Object>) ParameterUtil.parseObj(param, Map.class);
+		//flag为1为登出
+		Object flagObject=params.get("flag");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setContentType("text/html;charset=UTF-8");
+		
+		if(flagObject!=null&&flagObject.toString().equals("1")){
+			logger.info("----------------------------登出清除session中的user----------------------------------");
+			request.getSession().setAttribute("user",null);
+			Result result = new Result();
+			result.setCode(Response.LOGINOUT_SUCESS.getErrorCode());
+			result.setMessage(Response.LOGINOUT_SUCESS.getMsg());
+			String reslutJSON = JSONObject.toJSONString(result);
+			try {
+				response.getWriter().write(reslutJSON);
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.error(e.getMessage(), e);
+			}
+		}else{
+			//登录
+			try {
+				String[] methods = method.split("/");
+				String serviceName = methods[0] + "Service";
+				String methodName = methods[1];
+				// 获取service对象
+				WebApplicationContext webApplicationContext = ContextLoader.getCurrentWebApplicationContext();
+				Object service = webApplicationContext.getBean(serviceName);
+
+				Result result = this.getResult(service.getClass().getInterfaces()[0], service, methodName, params);
+				
+				User user = null;
+
+					if (result != null && result.getData() != null) {
+						user = new User();
+						user.setId( Long.valueOf(((Map<String, Object>) result.getData()).get("id").toString()));
+						user.setName( ((Map<String, Object>) result.getData()).get("name").toString());
+						user.setHeadImg( ((Map<String, Object>) result.getData()).get("headImg").toString());
+					}
+					// 存储登录的员工信息
+					request.getSession().setAttribute("user", user);
+					request.getSession().setMaxInactiveInterval(30*60);
+				   System.out.println("---------xcx登录id"+ "---------"+request.getSession().getId()+"-------------------");
+					
+					result.setCode(Response.LOGIN_SUCESS.getErrorCode());
+					result.setMessage(Response.LOGIN_SUCESS.getMsg());
+					
+					
+					String reslutJSON = JSONObject.toJSONString(result);
+					response.getWriter().write(reslutJSON);
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error(e.getMessage(), e);
+			}
+		}
+		logger.info("----------------------------api.do---END----------------------------------------");
+	}
+	
+	
 	@RequestMapping("/api")
 	@SuppressWarnings("unchecked")
 	public void find(HttpServletRequest request, String method, String param, HttpServletResponse response) {
@@ -74,25 +204,17 @@ public class CommonController {
 		Object service = webApplicationContext.getBean(serviceName);
 		Result result = this.getResult(service.getClass().getInterfaces()[0], service, methodName, params);
 		try {
-			if (result.getData() instanceof HSSFWorkbook) {
-				HSSFWorkbook excel = (HSSFWorkbook) result.getData();
-				response.setHeader("content-disposition", "attachment;filename="+ new String((excel.getSheetName(0)).getBytes("gbk"), "iso8859-1") + ".xls");
-				response.setContentType("multipart/form-data");
-				OutputStream ouputStream;
-				ouputStream = response.getOutputStream();
-				excel.write(ouputStream);
-				ouputStream.flush();
-				ouputStream.close();
-			} else {
+
 				//此参数即原始的请求参数
 				result.setParam(param);
 				String reslutJSON = JSONObject.toJSONStringWithDateFormat(result, "yyyy-MM-dd HH:mm:ss", SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteMapNullValue);
 				response.getWriter().write(reslutJSON);
-			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
 	
 
 

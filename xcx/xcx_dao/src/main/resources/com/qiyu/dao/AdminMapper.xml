@@ -1,18 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper>
+	<resultMap type="com.qiyu.bean.Admin" id="AdminResultMap"></resultMap>
 
-
-	<select id="getAccountAlready" parameterType="java.util.Map" resultType="java.lang.Integer">
-		select count(id) from user 
+	<select id="getAdminList" parameterType="java.util.Map" resultMap="AdminResultMap">
+		select * from admin 
+		<where>
+			<if test="level !=null and ( level ==1 or level == '1')"> and store_id =0 </if>
+			<if test="level !=null and ( level ==2 or level == '2')"> and building_id =#{buildingId} </if>
+		
+		
+		</where>  
+		
+	
+	
+	</select>
+	
+		<select id="getAccountAlready" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(id) from admin 
 		<where>
 			<if test="level !=null and ( level ==2 or level == '2')"> and level =#{level} 
 			 and  name =#{name}  or account =#{account} 
 			</if>
-			<if test="level !=null and ( level ==3 or level == '3')">and buildingId =#{adminBuildingId} and level =#{level} 
+			<if test="level !=null and ( level ==3 or level == '3')">and buildingId =#{buildingId} and level =#{level} 
 				and  name =#{name} or account =#{account} 
 			</if>
 		</where>
+	
+	
+	</select>
+	
+	
+	<select id="loginAdmin" parameterType="java.util.Map" resultMap="AdminResultMap">
+		select * from admin  where account=#{account} and pwd =#{pwd}
+		
 	
 	
 	</select>

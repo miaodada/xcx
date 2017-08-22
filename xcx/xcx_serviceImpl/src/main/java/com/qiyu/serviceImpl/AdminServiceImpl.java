@@ -1,6 +1,7 @@
 package com.qiyu.serviceImpl;
 
 
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qiyu.bean.Admin;
 import com.qiyu.dao.IAdminDao;
 import com.qiyu.dao.IBuildingDao;
 import com.qiyu.dao.IStoreDao;
@@ -126,4 +128,37 @@ public class AdminServiceImpl  implements IAdminService {
 	}
 	
 	
+	@Override
+	public List<Admin> getAdminList(Map<String, Object> map) {
+		String level=map.get("level")==null?null:map.get("level").toString();
+		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+			throw new BizException("430", "无限权限");
+		}
+		List<Admin> adminList = adminDao.getAdminList(map);
+		
+		
+		return adminList;
+		
+		
+	}
+	
+	@Override
+	public Admin loginAdmin(Map<String, Object> map) {
+		String level=map.get("level")==null?null:map.get("level").toString();
+		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+			throw new BizException("430", "无权限");
+		}
+		if(StringUtils.isBlank(map.get("account"))||StringUtils.isBlank(map.get("pwd"))){
+			throw new BizException("430", "请输入正确的帐号和密码");
+		}
+		Admin Admin = adminDao.loginAdmin(map);
+		
+		if(Admin==null){
+			throw new BizException("430", "请输入正确的帐号和密码");
+		}
+		
+		return Admin;
+		
+		
+	}
 }
