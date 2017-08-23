@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qiyu.bean.Activity;
+import com.qiyu.dao.IActivityDao;
 import com.qiyu.dao.IBuildingDao;
 import com.qiyu.dao.IUserDao;
 import com.qiyu.service.IAdminService;
@@ -26,7 +28,8 @@ public class StoreServiceImpl  implements IStoreService {
 	private static Logger logger = LoggerFactory.getLogger(StoreServiceImpl.class);
 	@Autowired
 	private IBuildingDao accountDao;
-	
+	@Autowired
+	private IActivityDao activityDao;
 	
 
 
@@ -39,4 +42,7 @@ public class StoreServiceImpl  implements IStoreService {
 		
 		
 	}
+	
+	
+
 }

@@ -18,5 +18,6 @@ public interface IStoreService {
      */
 
 	void addAdmin(Map<String, Object> map);
+
 	
 }

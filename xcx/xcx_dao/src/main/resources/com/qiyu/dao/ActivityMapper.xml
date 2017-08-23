@@ -24,10 +24,10 @@
 
 		<insert id="addActivity" parameterType="java.util.Map">
 			insert into activity(
-				title,building_id,store_id,	start_time,	end_time,  phone, reminder_time, pic, introduce,tag,cover	
+				title,building_id,store_id,	start_time,	end_time,  phone, reminder_time, pic, introduce,tag,cover,sign_up_ids	
 			) 
 			values(
-			 #{title}, #{buildingId}, #{storeId}, #{startTime},	 #{endTime} ,  #{phone},  #{reminderTime},	#{pic}, #{introduce} , #{tag}, #{cover}
+			 #{title}, #{buildingId}, #{storeId}, #{startTime},	 #{endTime} ,  #{phone},  #{reminderTime},	#{pic}, #{introduce} , #{tag}, #{cover},'[]'
 			)
 			
 		</insert>
@@ -48,8 +48,9 @@
 				<if test="tag !=null"> tag =#{tag}, </if>
 				<if test="cover !=null"> cover =#{cover}, </if>
 				<if test="isTop !=null and (isTop ==1 or isTop =='1')"> is_top =now(), </if>
+				<if test="signUpId !=null"> JSON_ARRAY_APPEND(sign_up_ids, '$',#{signUpId}) </if>
 			</set>	
-			where id =#{id} and <if test="level !=null and ( level ==2 or level == '2')"> and building_id =#{buildingId} </if>
+			where id =#{id} <if test="level !=null and ( level ==2 or level == '2')"> and building_id =#{buildingId} </if>
 		</update>
 		
 		<select id="getActivity" parameterType="java.util.Map" resultMap="getActivityMap">

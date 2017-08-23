@@ -27,11 +27,20 @@ public class Activity implements Serializable {
 	private String tag ; // 标签
 	private String cover ; // 封面配图
 	private String signUpNum ; // 报名人数
+	private String signUpIds ; // 报名人id
 	private String isSsignUp ; // 是否报名
 	private List<FileInfo> picList ; // 活动配图集合
 	private List<FileInfo> coverList ; // 封面配图集合
 	
 	
+	
+	
+	public String getSignUpIds() {
+		return signUpIds;
+	}
+	public void setSignUpIds(String signUpIds) {
+		this.signUpIds = signUpIds;
+	}
 	public Long getId() {
 		return id;
 	}

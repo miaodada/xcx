@@ -37,4 +37,5 @@ public interface IActivityDao {
 	 */
 	Activity getActivity(Map<String, Object> map);
 	
+	
 }

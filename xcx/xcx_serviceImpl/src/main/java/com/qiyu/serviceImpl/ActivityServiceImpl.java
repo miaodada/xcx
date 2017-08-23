@@ -2,6 +2,7 @@ package com.qiyu.serviceImpl;
 
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +117,28 @@ public class ActivityServiceImpl  implements IActivityService {
 		}catch(Exception e){
 			throw new BizException("440", "置顶失败");
 		}
+		
+	}
+	
+	@Override
+	public void isSignUp(Map<String, Object> map){
+		String userId = map.get("userId").toString();
+		
+		if(StringUtils.isBlank(map.get("id"))){
+			throw new BizException("430", "缺少选中活动id");
+		}
+		Activity activity = activityDao.getActivity(map);
+		if(activity ==null){
+			throw new BizException("430", "该活动已过期");
+		}
+		String signUpIds = activity.getSignUpIds();
+		if(!StringUtils.isBlank(signUpIds)){
+			if(Pattern.matches("(^|^.*[^0-9]{1})("+userId+"{1})($|[^0-9]{1}.*$)", signUpIds)){
+				return;
+			}
+		}
+		map.put("signUpId", Long.valueOf(userId));
+		activityDao.updateActivity(map);
 		
 	}
 }

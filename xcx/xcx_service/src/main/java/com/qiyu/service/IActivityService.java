@@ -49,4 +49,9 @@ public interface IActivityService {
 	
 	void isTop(Map<String, Object> map);
 	
+	 /**
+     * 报名
+     */
+	void isSignUp(Map<String, Object> map);
+	
 }
