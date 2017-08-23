@@ -1,5 +1,6 @@
 package com.qiyu.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.qiyu.bean.Activity;
@@ -53,5 +54,10 @@ public interface IActivityService {
      * 报名
      */
 	void isSignUp(Map<String, Object> map);
+	
+	 /**
+     * 活动列表
+     */
+	List<Activity> getActivityList(Map<String, Object> map);
 	
 }

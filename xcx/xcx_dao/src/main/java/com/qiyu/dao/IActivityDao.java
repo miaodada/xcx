@@ -1,5 +1,6 @@
 package com.qiyu.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import com.qiyu.bean.Activity;
@@ -36,6 +37,12 @@ public interface IActivityDao {
  	 * 
 	 */
 	Activity getActivity(Map<String, Object> map);
+	/**
+	 * 活动列表
+ 	 * 
+	 */
+	
+	List<Activity> getActivityList(Map<String, Object> map);
 	
 	
 }

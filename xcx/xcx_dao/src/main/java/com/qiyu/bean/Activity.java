@@ -26,7 +26,7 @@ public class Activity implements Serializable {
 	private String introduce ; // 活动介绍
 	private String tag ; // 标签
 	private String cover ; // 封面配图
-	private String signUpNum ; // 报名人数
+	private Integer signUpNum ; // 报名人数
 	private String signUpIds ; // 报名人id
 	private String isSsignUp ; // 是否报名
 	private List<FileInfo> picList ; // 活动配图集合
@@ -119,10 +119,10 @@ public class Activity implements Serializable {
 	public void setCover(String cover) {
 		this.cover = cover;
 	}
-	public String getSignUpNum() {
+	public Integer getSignUpNum() {
 		return signUpNum;
 	}
-	public void setSignUpNum(String signUpNum) {
+	public void setSignUpNum(Integer signUpNum) {
 		this.signUpNum = signUpNum;
 	}
 	public String getIsSsignUp() {

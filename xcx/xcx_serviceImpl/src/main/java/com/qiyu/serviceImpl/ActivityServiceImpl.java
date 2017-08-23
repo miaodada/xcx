@@ -1,6 +1,7 @@
 package com.qiyu.serviceImpl;
 
 
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -139,6 +140,30 @@ public class ActivityServiceImpl  implements IActivityService {
 		}
 		map.put("signUpId", Long.valueOf(userId));
 		activityDao.updateActivity(map);
+		
+	}
+	
+	
+	@Override
+	public List<Activity> getActivityList(Map<String, Object> map) {
+		
+		//type 1.过期；2.没过期
+		String type=map.get("type")==null?null:map.get("type").toString();
+		if(StringUtils.isBlank(type)){
+			throw new BizException("430", "缺少参数type");
+		}
+		
+		
+		List<Activity> activityList = activityDao.getActivityList(map);
+		for (Activity activity : activityList) {
+			String signUpIds = activity.getSignUpIds();
+			if(!StringUtils.isBlank(signUpIds)){
+				activity.setSignUpNum(signUpIds.split(",").length);
+			}else{
+				activity.setSignUpNum(0);
+			}
+	}
+		return activityList;
 		
 	}
 }

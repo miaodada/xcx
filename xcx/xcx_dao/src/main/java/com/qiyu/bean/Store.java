@@ -15,7 +15,7 @@ public class Store implements Serializable {
 	private String buildingId ; // 大楼Id 
 	private String name ; // 门店名
 	private String formatType ; // 业态类型
-	private String  Business ; // 楼层
+	private String  floor ; // 楼层
 	private String storeNo ; // 编号
 	private String logo ; // 门店LOGO
 	private String pic ; // 门店配图
@@ -60,11 +60,11 @@ public class Store implements Serializable {
 	public void setFormatType(String formatType) {
 		this.formatType = formatType;
 	}
-	public String getBusiness() {
-		return Business;
+	public String getFloor() {
+		return floor;
 	}
-	public void setBusiness(String business) {
-		Business = business;
+	public void setFloor(String floor) {
+		this.floor = floor;
 	}
 	public String getStoreNo() {
 		return storeNo;

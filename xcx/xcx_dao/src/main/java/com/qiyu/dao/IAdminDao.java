@@ -38,6 +38,7 @@ public interface IAdminDao {
 	 */
 	void updateAdmin(Map<String, Object> map);
 	
+	void updateAdmin2(Map<String, Object> map);
 	/**
 	 * 删除管理员
  	 * 
@@ -62,4 +63,5 @@ public interface IAdminDao {
 	    */
 
 	Admin loginAdmin(Map<String, Object> map);
+
 }
