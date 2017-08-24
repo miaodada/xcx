@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.qiyu.bean.Admin;
+import com.qiyu.bean.FileInfo;
 
 /**
  * 员工表dao
@@ -63,5 +64,15 @@ public interface IAdminDao {
 	    */
 
 	Admin loginAdmin(Map<String, Object> map);
+	
+	/**
+	    * 保存图片
+	    * @author 维斯
+	    * @param map
+	    * @return
+	    * 2016年11月4日  下午3:25:04
+	    */
+
+	String saveFileInfo(FileInfo fileInfo);
 
 }

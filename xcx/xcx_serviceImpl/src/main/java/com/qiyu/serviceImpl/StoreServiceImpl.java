@@ -71,14 +71,15 @@ public class StoreServiceImpl  implements IStoreService {
 	@Override
 	public List<Store> getStoreList(Map<String, Object> map) {
 		
-		List<Store> storeList = storeDao.getStoreList(map);
-		
-		for (Store store : storeList) {
-			
+		String level = map.get("level")==null?null:map.get("level").toString();
+		if(StringUtils.isBlank(level)||!level.equals("1")&&!level.equals("2")){
+			throw  new BizException("430", "无权限");
 		}
 		
-		return null;
-		// TODO Auto-generated method stub
+		List<Store> storeList = storeDao.getStoreList(map);
+		
+		
+		return storeList;
 		
 	}
 

@@ -155,16 +155,14 @@ public class ActivityServiceImpl  implements IActivityService {
 		
 		
 		List<Activity> activityList = activityDao.getActivityList(map);
-		for (Activity activity : activityList) {
-			String signUpIds = activity.getSignUpIds();
-			if(!StringUtils.isBlank(signUpIds)){
-				activity.setSignUpNum(signUpIds.split(",").length);
-			}else{
-				activity.setSignUpNum(0);
-			}
-	}
+
 		return activityList;
 		
+	}
+	public static void main(String[] args) {
+		String s= "xxxxx.cc";
+		String substring = s.substring(s.lastIndexOf(".")+1,s.length());
+		System.out.println(substring.toString());
 	}
 }
 

@@ -2,6 +2,7 @@ package com.qiyu.serviceImpl;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -65,12 +66,22 @@ public class BuildingServiceImpl  implements IBuildingService {
 		if(StringUtils.isBlank("id")){
 			throw new BizException("430", "缺少选中大楼id");
 		}
-		buildingDao.getBuilding(map);
-		return null;
+		Building building =buildingDao.getBuilding(map);
+		return building;
 		
 	}
 
-	
+	@Override
+	public List<Building> getBuildingList(Map<String, Object> map) {
+		
+		String level = map.get("level")==null?null:map.get("level").toString();
+		if(StringUtils.isBlank(level)||!level.equals("1")){
+			throw  new BizException("430", "无权限");
+		}
+		List<Building> building =buildingDao.getBuildingList(map);
+		return building;
+		
+	}
 	
 	
 	
@@ -81,10 +92,9 @@ public class BuildingServiceImpl  implements IBuildingService {
 	
 	
 	public static void main(String[] args) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("level", 1);
-		map.put("initUpdate", 0);
+		String s= "     1         ";
+		int length = s.trim().length();
 		
-		 new BuildingServiceImpl().updateBuilding(map);
+		 System.out.println(length);
 	}
 }

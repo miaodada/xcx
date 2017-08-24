@@ -44,6 +44,11 @@
 		
 	</insert>
 	
+	<insert id="saveFileInfo" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
+		insert into file(url) values(#{url})
+		
+	</insert>
+	
 	<update id="updatePwd" parameterType="java.util.Map" >
 			update admin set
 			pwd =#{pwd} where id=#{id} 

@@ -1,10 +1,21 @@
 package com.qiyu.web.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
@@ -14,13 +25,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.qiyu.web.vo.Result;
 import com.qiyu.bean.Admin;
+import com.qiyu.bean.FileInfo;
 import com.qiyu.bean.User;
+import com.qiyu.dao.IAdminDao;
 import com.qiyu.dao.IUserDao;
+import com.qiyu.util.common.DateUtil;
 import com.qiyu.util.common.ParameterUtil;
+import com.qiyu.util.common.PropertiesUtil;
 import com.qiyu.util.enums.Response;
 import com.qiyu.util.exception.BizException;
 import com.qiyu.util.exception.DAOException;
@@ -267,13 +286,6 @@ public class CommonController {
 			}
 			
 //			if(currUser ==null){
-//				currUser = new User();
-//				//本地测试只保留一个账号(需要切换账号自行手动修改)
-//				currUser.setId(new Long(9094718));
-//				currUser.setPhone("14088889999");
-//				currUser.setCompanyId(new Long(9169549));
-//				currUser.setName("景麒测试账号");
-//				currUser.setLoginUserId(new Long(9094718));
 //				
 //				currUser.setId(new Long(94463));
 //				currUser.setPhone("14033338888");
@@ -307,6 +319,134 @@ public class CommonController {
 		return true;
 	}
 	
-    
+	@Autowired
+	private IAdminDao adminDao;
+	
+	@RequestMapping("/uploadFileForApp")
+	@SuppressWarnings("unchecked")
+	public void uploadFileForApp(HttpServletRequest request, String method, String param, HttpServletResponse response) {
+		logger.info("----------------------------app调用上传接口uploadFileForApp:START----------------------------------------");
+		logger.info("----------------------------method:" + method + "----------------------------------------");
+		logger.info("----------------------------param:" + param + "----------------------------------------");
+		// 参数转成Map
+		Object admin = request.getSession().getAttribute("admin");
+		if(admin==null){
+			throw new BizException("430", "无权限");
+		}
+		try {
+			JSONObject resultJson = new JSONObject();
+			String fileIds =null;
+				CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
+				// 过滤掉不允许的文件类型
+				String[] errorType = { ".jpg", ".png", ".gif"};
+				if (multipartResolver.isMultipart(request)) {
+					// 转换成多部分request
+					MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+					// 取得request中的所有文件名
+					Iterator<String> iter = multiRequest.getFileNames();
+					
+					while (iter.hasNext()) {
+						FileInfo fileInfo = new FileInfo();
+						// 取得上传文件
+						MultipartFile multipartFile = multiRequest.getFile(iter.next());
+						if (multipartFile != null) {
+							// 取得当前上传文件的文件名称
+							String originalFilename = multipartFile.getOriginalFilename();
+							//String fileType = originalFilename.split("\\.", 2)[1];
+							// 获取图片扩展名
+			       	    	String fileType = originalFilename.substring(originalFilename.lastIndexOf(".")+1,originalFilename.length());
+							if (originalFilename.trim() != "") {
+								for (int temp = 0; temp < errorType.length; temp++) {
+									// 文件名的第一个.后面的为文件后缀
+									if (!fileType.endsWith(errorType[temp])) {
+										throw new IOException("只能上传jpg/png/gif文件");
+									}
+								}
+							String curDate = DateUtil.getCurDate("yyyymmdd");
+							String file_location = PropertiesUtil.getPropertyByKey("file_location_app")+curDate+"/";
+							File dir = new File(file_location);
+							if (!dir.exists() && !dir.isDirectory()) {
+								//目录不存在则创建一个
+								dir.mkdir();
+							}
+							
+							String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+							String fileName = "File" + uuid +"."+ fileType;
+							
+							File localFile = new File(file_location+fileName); //保存路径
+							//1.先将原文件上传至服务器(目前文件与项目在同一台服务器上)
+							multipartFile.transferTo(localFile);
+							
+							BufferedImage bufImage = ImageIO.read(new FileInputStream(localFile));
+							
+							//3.准备将文件信息保存到数据库表中
+							String httpFilePath = PropertiesUtil.getPropertyByKey("file_url");
+							//4.拼接成全路径
+							String userFileUrl = httpFilePath+curDate+"/YS_"+fileName;
+							fileInfo.setUrl(userFileUrl); //访问路径
+							
+							//生成压缩图
+							
+					        
+//					        //拼接后台文件名称
+//					        String thumbnailPathName = fileDirectory + File.separator + uuid + "small."
+//					                                    + FilenameUtils.getExtension(imageFile.getOriginalFilename());
+//					        //added by yangkang 2016-3-30 去掉后缀中包含的.png字符串 
+//					        if(thumbnailPathName.contains(".png")){
+//					            thumbnailPathName = thumbnailPathName.replace(".png", ".jpg");
+//					        }
+//					        long size = multipartFile.getSize();
+//					        double scale = 1.0d ;
+//					        if(size >= 200*1024){
+//					            if(size > 0){
+//					                scale = (200*1024f) / size  ;
+//					            }
+//					        }
+//					        
+//					        
+//					        //拼接文件路劲
+//					        String thumbnailFilePathName = realPath + File.separator + thumbnailPathName;
+//					        try {
+//					            //added by chenshun 2016-3-22 注释掉之前长宽的方式，改用大小
+////					            Thumbnails.of(filePathName).size(width, height).toFile(thumbnailFilePathName);
+//					            if(size < 200*1024){
+//					                Thumbnails.of(filePathName).scale(1f).outputFormat("jpg").toFile(thumbnailFilePathName);
+//					            }else{
+//					                Thumbnails.of(filePathName).scale(1f).outputQuality(scale).outputFormat("jpg").toFile(thumbnailFilePathName);
+//					            }
+//					            
+//					        } catch (Exception e1) {
+//					            return new BaseResult(false, "操作失败", e1.getMessage());
+//					        }
+			                
+		                	//文件信息保存到库中
+		                	String fileId = adminDao.saveFileInfo(fileInfo);
+		                	if(fileIds==null){
+		                		fileIds=fileId;
+		                	}else{
+		                		fileIds=fileIds+","+fileId;
+		                	}
+		                	resultJson.put("code", 0);
+		                	resultJson.put("data", fileIds);
+		                    resultJson.put("message", "上传图片成功！");
+		        			}
+						}
+					}
+					try {
+		            	response.setContentType("text/json;charset=utf-8");
+		    			response.getWriter().print(resultJson.toString());
+		    		} catch (IOException e) {
+		    			resultJson.put("code", 4300);
+		    			resultJson.put("message", "上传图片失败！");
+		    			response.getWriter().write(resultJson.toString());
+		    			e.printStackTrace();
+		    		}
+				}
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+		}
+		logger.info("----------------------------app端调用上传接口uploadFileForApp:END----------------------------------------");
+	}
 	
 }

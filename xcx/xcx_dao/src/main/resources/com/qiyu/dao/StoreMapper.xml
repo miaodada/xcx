@@ -14,7 +14,13 @@
 	</select>
 	
 		<select id="getStoreList" resultMap="" parameterType="java.util.Map" >
-		select * from store where 
+		select s.*,b.name building_name ,count(s.id) activity_num ,sum(JSON_LENGTH(a.sign_up_ids))  sign_up_num from store s 
+			left join building b on s.building_id = b.id 
+			left join activity a on s.id = a.store_id 
+		<where>
+			<if test="level !=null and (level == 2 or level =='2')"> and building_id ={buildingId}</if>
+			<if test="keyword !=null and keyword.trim().length()>0">and name like '%#{keyword}%'</if>
+		</where> group by s.id
 	
 	
 	</select>

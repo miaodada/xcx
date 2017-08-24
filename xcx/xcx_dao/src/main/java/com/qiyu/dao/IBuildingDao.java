@@ -1,6 +1,9 @@
 package com.qiyu.dao;
 
+import java.util.List;
 import java.util.Map;
+
+import com.qiyu.bean.Building;
 
 /**
  * 员工表dao
@@ -27,6 +30,12 @@ public interface IBuildingDao {
 	 * 详情大楼
  	 * 
 	 */
-	void getBuilding(Map<String, Object> map);
+	Building getBuilding(Map<String, Object> map);
+	
+	/**
+	 * 大楼列表
+ 	 * 
+	 */
+	List<Building> getBuildingList(Map<String, Object> map);
 }
 

@@ -81,5 +81,16 @@
 		
 	
 	</select>
+	
+	
+		<select id="getBuildingList" parameterType="java.util.Map" resultMap="getBuildingtMap">
+			select s.*,count(DISTINCT s.id) store_num,count(b.id) activity_num , sum(JSON_LENGTH(a.sign_up_ids)) sign_up_num   from building b 
+					left join store s on b.id = s.building_id 
+					left join activity a on b.id = a.building_id
+			<where> 
+					<if test="keyword !=null and keyword.trim().length()>0">and name like '%#{keyword}%'</if>
+				</where>
+	
+	</select>
 
 </mapper>

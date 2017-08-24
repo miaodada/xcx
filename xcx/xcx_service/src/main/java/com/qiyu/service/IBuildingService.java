@@ -1,5 +1,6 @@
 package com.qiyu.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.qiyu.bean.Building;
@@ -20,6 +21,12 @@ public interface IBuildingService {
      * 大楼详情
      */
 	Building getBuilding(Map<String, Object> map);
+	
+	/**
+     * 大楼列表
+     */
+	
+	List<Building> getBuildingList(Map<String, Object> map);
 	
 }
 

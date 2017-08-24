@@ -22,8 +22,17 @@ public class Store implements Serializable {
 	private String introduce ; // 门店介绍
 	private String activityNum ; // 活动数
 	private String signUpNum ; // 报名人数
+	private String buildingName ; // 大楼名
 	
 	
+	
+	
+	public String getBuildingName() {
+		return buildingName;
+	}
+	public void setBuildingName(String buildingName) {
+		this.buildingName = buildingName;
+	}
 	public String getActivityNum() {
 		return activityNum;
 	}
