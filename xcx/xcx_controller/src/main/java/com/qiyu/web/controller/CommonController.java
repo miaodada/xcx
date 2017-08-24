@@ -32,6 +32,9 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.qiyu.web.vo.Result;
+
+import net.coobird.thumbnailator.Thumbnails;
+
 import com.qiyu.bean.Admin;
 import com.qiyu.bean.FileInfo;
 import com.qiyu.bean.User;
@@ -381,44 +384,41 @@ public class CommonController {
 							
 							//3.准备将文件信息保存到数据库表中
 							String httpFilePath = PropertiesUtil.getPropertyByKey("file_url");
-							//4.拼接成全路径
-							String userFileUrl = httpFilePath+curDate+"/YS_"+fileName;
-							fileInfo.setUrl(userFileUrl); //访问路径
+							
 							
 							//生成压缩图
 							
+					        String newFileName ="YS_"+fileName;
+					        //拼接后台文件名称
+					        if(fileName.contains(".png")){
+					        	newFileName = fileName.replace(".png", ".jpg");
+					        }
+					        long size = multipartFile.getSize();
+					        double scale = 1.0d ;
+					        if(size >= 200*1024){
+					            if(size > 0){
+					                scale = (200*1024f) / size  ;
+					            }
+					        }
 					        
-//					        //拼接后台文件名称
-//					        String thumbnailPathName = fileDirectory + File.separator + uuid + "small."
-//					                                    + FilenameUtils.getExtension(imageFile.getOriginalFilename());
-//					        //added by yangkang 2016-3-30 去掉后缀中包含的.png字符串 
-//					        if(thumbnailPathName.contains(".png")){
-//					            thumbnailPathName = thumbnailPathName.replace(".png", ".jpg");
-//					        }
-//					        long size = multipartFile.getSize();
-//					        double scale = 1.0d ;
-//					        if(size >= 200*1024){
-//					            if(size > 0){
-//					                scale = (200*1024f) / size  ;
-//					            }
-//					        }
-//					        
-//					        
-//					        //拼接文件路劲
-//					        String thumbnailFilePathName = realPath + File.separator + thumbnailPathName;
-//					        try {
-//					            //added by chenshun 2016-3-22 注释掉之前长宽的方式，改用大小
-////					            Thumbnails.of(filePathName).size(width, height).toFile(thumbnailFilePathName);
-//					            if(size < 200*1024){
-//					                Thumbnails.of(filePathName).scale(1f).outputFormat("jpg").toFile(thumbnailFilePathName);
-//					            }else{
-//					                Thumbnails.of(filePathName).scale(1f).outputQuality(scale).outputFormat("jpg").toFile(thumbnailFilePathName);
-//					            }
-//					            
-//					        } catch (Exception e1) {
-//					            return new BaseResult(false, "操作失败", e1.getMessage());
-//					        }
+					        
+					        //拼接文件路劲
+					        try {
+					            //added by chenshun 2016-3-22 注释掉之前长宽的方式，改用大小
+//					            Thumbnails.of(filePathName).size(width, height).toFile(thumbnailFilePathName);
+					            if(size < 200*1024){
+					                Thumbnails.of(file_location+fileName).scale(1f).outputFormat("jpg").toFile(file_location+newFileName);
+					            }else{
+					                Thumbnails.of(file_location+fileName).scale(1f).outputQuality(scale).outputFormat("jpg").toFile(file_location+newFileName);
+					            }
+					            
+					        } catch (Exception e1) {
+					           throw new BizException("430", "图片压缩失败");
+					        }
 			                
+					      //4.拼接成全路径
+							String userFileUrl = httpFilePath+curDate+newFileName;
+							fileInfo.setUrl(userFileUrl); //访问路径
 		                	//文件信息保存到库中
 		                	String fileId = adminDao.saveFileInfo(fileInfo);
 		                	if(fileIds==null){
@@ -449,4 +449,7 @@ public class CommonController {
 		logger.info("----------------------------app端调用上传接口uploadFileForApp:END----------------------------------------");
 	}
 	
+	public static void main(String[] args) {
+		
+	}
 }

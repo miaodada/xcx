@@ -49,6 +49,11 @@
 		
 	</insert>
 	
+	<select id="getfile" parameterType="java.util.Map" resultType="com.qiyu.bean.FileInfo">
+			select id,url from file where 
+			id in <foreach collection="fileIds" close=")" item="item" separator="," open="(">#{item}</foreach>		
+		</select>
+	
 	<update id="updatePwd" parameterType="java.util.Map" >
 			update admin set
 			pwd =#{pwd} where id=#{id} 

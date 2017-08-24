@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qiyu.bean.Activity;
+import com.qiyu.bean.FileInfo;
 import com.qiyu.dao.IActivityDao;
+import com.qiyu.dao.IAdminDao;
 import com.qiyu.service.IActivityService;
 import com.qiyu.util.exception.BizException;
 import com.qiyu.util.http.StringUtils;
@@ -28,7 +30,8 @@ public class ActivityServiceImpl  implements IActivityService {
 	@Autowired
 	private IActivityDao activityDao;
 
-
+	@Autowired
+	private IAdminDao adminDao;
 
 
 
@@ -159,6 +162,63 @@ public class ActivityServiceImpl  implements IActivityService {
 		return activityList;
 		
 	}
+	
+	
+	
+	@Override
+	public Activity getActivityDetail(Map<String, Object> map) {
+		String id=map.get("id")==null?null:map.get("id").toString();
+		if(StringUtils.isBlank(id)){
+			throw new BizException("430", "缺少参数id");
+		}
+		
+		
+		Activity activity = activityDao.getActivityDetail(map);
+		
+		if(activity==null){
+			throw new BizException("430", "活动已结束");
+		}
+		if(activity.getSignUpNum()>0){
+			String[] fileIds = activity.getSignUpIds()
+							.substring(1, activity.getSignUpIds().length()-1)
+							.replace(" ", "").split(",");
+			map.put("fileIds", fileIds);
+			List<FileInfo> getfile = adminDao.getfile(map);
+			activity.setSignUpList(getfile);
+		}
+
+		return activity;
+		
+	}
+	
+	@Override
+	public List<Activity> getUserActivityList(Map<String, Object> map) {
+		String building=map.get("building")==null?null:map.get("building").toString();
+		String userId=map.get("userId")==null?null:map.get("userId").toString();
+		if(StringUtils.isBlank(building)){
+			throw new BizException("430", "缺少参数building");
+		}
+		
+		List<Activity> userActivityList = activityDao.getUserActivityList(map);
+		
+		for (Activity activity : userActivityList) {
+			String signUpIds = activity.getSignUpIds();
+			if(!StringUtils.isBlank(signUpIds)&&signUpIds.length()>2){
+				if(Pattern.matches("(^|^.*[^0-9]{1})("+userId+"{1})($|[^0-9]{1}.*$)", signUpIds)){
+					activity.setIsSsignUp("1");
+				}else{
+					activity.setIsSsignUp("0");
+				}
+			}
+		}
+		
+		return userActivityList;
+		
+	}
+	
+	
+	
+	
 	public static void main(String[] args) {
 		String s= "xxxxx.cc";
 		String substring = s.substring(s.lastIndexOf(".")+1,s.length());

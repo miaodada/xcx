@@ -17,10 +17,28 @@
 		</resultMap>
 		
 		<resultMap type="com.qiyu.bean.Activity" id="getActivityMap" extends="BaseResultMap">
-			<association property="picList" column="pic" select="getfile"></association>
+			<collection property="coverList" column="cover" select="getfile"></collection>
 		</resultMap>
 		
 		
+		
+		<resultMap type="com.qiyu.bean.Activity" id="getUserActivityListMap" extends="BaseResultMap">
+			<result column="building_adress" property="buildingAdress" jdbcType="VARCHAR" />
+			<association property="Store" column="store_id" select="com.qiyu.dao.IStoreDao.getStore"></association>
+			<collection property="picList" column="pic" select="getfile"></collection>
+		</resultMap>
+			
+			<resultMap type="com.qiyu.bean.Activity" id="getActivityDetailMap" extends="BaseResultMap">
+			 <result column="building_logo" property="buildingLogo" jdbcType="VARCHAR" />
+			 <result column="building_adress" property="buildingAdress" jdbcType="VARCHAR" />
+			<association property="Store" column="store_id" select="com.qiyu.dao.IStoreDao.getStore"></association>
+			<collection property="picList" column="pic" select="getfile"></collection>
+		</resultMap>
+		
+		
+		<select id="getfile" parameterType="java.util.Map" resultType="com.qiyu.bean.FileInfo">
+			select id,url from file where find_in_set(id,#{ids})		
+		</select>
 
 		<insert id="addActivity" parameterType="java.util.Map">
 			insert into activity(
@@ -64,6 +82,21 @@
 				<if test="type !=null and (type ==1 or type =='1')">and end_time >now</if>
 				<if test="type !=null and (type ==2 or type =='2')">and end_time &lt;now</if>
 			</where>
+		</select>
+		
+		
+		<select id="getActivityDetail" parameterType="java.util.Map" resultMap="getActivityDetailMap">
+			select a.*,JSON_LENGTH(a.sign_up_ids) sign_up_num ,f.url, building_logo ,b.building_adress
+				from activity a 
+				left join building b on a.building_id =b.id
+				left join file f on f.id = b.logo
+		</select>
+		
+		
+		<select id="getUserActivityList" parameterType="java.util.Map" resultMap="getUserActivityListMap">
+			select a.*,b.building_adress
+				from activity a 
+				left join building b on a.building_id =b.id
 		</select>
 
 </mapper>

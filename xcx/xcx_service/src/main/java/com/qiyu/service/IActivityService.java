@@ -40,7 +40,7 @@ public interface IActivityService {
 	void updateActivity(Map<String, Object> map);
 	
 	 /**
-     * 获取活动详情
+     * 获取活动详情(修改时用)
      */
 	Activity getActivity(Map<String, Object> map);
 	
@@ -59,5 +59,15 @@ public interface IActivityService {
      * 活动列表
      */
 	List<Activity> getActivityList(Map<String, Object> map);
+	
+	 /**
+     * 获取活动详（游客点击查看）
+     */
+	Activity getActivityDetail(Map<String, Object> map);
+	/**
+     * 活动列表（游客查看列表展示）
+     */
+	
+	List<Activity> getUserActivityList(Map<String, Object> map);
 	
 }

@@ -31,10 +31,37 @@ public class Activity implements Serializable {
 	private String isSsignUp ; // 是否报名
 	private List<FileInfo> picList ; // 活动配图集合
 	private List<FileInfo> coverList ; // 封面配图集合
+	private List<FileInfo> signUpList ; // 报名人头像
+	private Store Store ; // 封面配图集合
+	private String buildingLogo ; // 大楼logo
+	private String buildingAdress ; // 大楼地址
 	
 	
 	
-	
+	public List<FileInfo> getSignUpList() {
+		return signUpList;
+	}
+	public void setSignUpList(List<FileInfo> signUpList) {
+		this.signUpList = signUpList;
+	}
+	public String getBuildingLogo() {
+		return buildingLogo;
+	}
+	public void setBuildingLogo(String buildingLogo) {
+		this.buildingLogo = buildingLogo;
+	}
+	public String getBuildingAdress() {
+		return buildingAdress;
+	}
+	public void setBuildingAdress(String buildingAdress) {
+		this.buildingAdress = buildingAdress;
+	}
+	public Store getStore() {
+		return Store;
+	}
+	public void setStore(Store store) {
+		Store = store;
+	}
 	public String getSignUpIds() {
 		return signUpIds;
 	}

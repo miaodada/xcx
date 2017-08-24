@@ -1,6 +1,7 @@
 package com.qiyu.bean;
 
 import java.io.Serializable;
+import java.util.List;
 
 //店铺对象
 public class Store implements Serializable {
@@ -23,10 +24,22 @@ public class Store implements Serializable {
 	private String activityNum ; // 活动数
 	private String signUpNum ; // 报名人数
 	private String buildingName ; // 大楼名
+	private List<FileInfo> logoList ; // 门店LOGO
+	private List<FileInfo> picList ; // 门店配图
 	
 	
-	
-	
+	public List<FileInfo> getLogoList() {
+		return logoList;
+	}
+	public void setLogoList(List<FileInfo> logoList) {
+		this.logoList = logoList;
+	}
+	public List<FileInfo> getPicList() {
+		return picList;
+	}
+	public void setPicList(List<FileInfo> picList) {
+		this.picList = picList;
+	}
 	public String getBuildingName() {
 		return buildingName;
 	}

@@ -26,8 +26,8 @@
 		</resultMap>
 		
 		<resultMap type="com.qiyu.bean.Building" id="getBuildingtMap" extends="BaseResultMap">
-			<association property="logoList" column="logo" select="getfile"></association>
-			<association property="picList" column="pic" select="getfile"></association>
+			<collection property="logoList" column="logo" select="getfile"></collection>
+			<collection property="picList" column="pic" select="getfile"></collection>
 		</resultMap>
 		
 		<select id="getfile" parameterType="java.util.Map" resultType="com.qiyu.bean.FileInfo">
