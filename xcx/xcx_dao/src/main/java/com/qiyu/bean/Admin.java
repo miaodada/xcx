@@ -17,8 +17,8 @@ public class Admin implements Serializable {
 	private String level ; // 用户级别 1.超级管理员 2。大楼管理员 3.店铺管理员
 	private String account ; // 帐号
 	private String pwd ; // 密码
-	private String buildingId ; // 大楼Id 超级管理员 为0
-	private String storeId ; // 门店Id    超级管理员/大楼管理员为 0
+	private Long buildingId ; // 大楼Id 超级管理员 为0
+	private Long storeId ; // 门店Id    超级管理员/大楼管理员为 0
 	private String initUpdate ; // 初始化门店或大楼 信息 0 ，未初始化 1.初始化
 	public Long getId() {
 		return id;
@@ -50,16 +50,16 @@ public class Admin implements Serializable {
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
 	}
-	public String getBuildingId() {
+	public Long getBuildingId() {
 		return buildingId;
 	}
-	public void setBuildingId(String buildingId) {
+	public void setBuildingId(Long buildingId) {
 		this.buildingId = buildingId;
 	}
-	public String getStoreId() {
+	public Long getStoreId() {
 		return storeId;
 	}
-	public void setStoreId(String storeId) {
+	public void setStoreId(Long storeId) {
 		this.storeId = storeId;
 	}
 	public String getInitUpdate() {

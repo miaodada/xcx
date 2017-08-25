@@ -10,9 +10,9 @@ package com.qiyu.util.enums;
  */
 public enum Response {
 
-	LOGIN_SUCESS("0","hrm登录成功"),
-	LOGIN_FAILURE("400","hrm登录失败"),
-	LOGINOUT_SUCESS("0","hrm登出成功"),
+	LOGIN_SUCESS("0","登录成功"),
+	LOGIN_FAILURE("400","登录失败"),
+	LOGINOUT_SUCESS("0","登出成功"),
 	EMPTY_ERROR("001", "参数为空"), 
 	TIME_ERROR("002", "时间错误"), 
 	SIGN_ERROR("003","签名错误"),

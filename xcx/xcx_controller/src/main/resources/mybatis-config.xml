@@ -5,13 +5,6 @@
 
 
 <configuration>
-	<!-- setting 延迟加载  二级缓存 -->
-	
-	<!-- 别名 -->
-	<typeAliases>
-		<package name="com.qiyu.bean"/>
-	</typeAliases>
-	
 
 
 </configuration>

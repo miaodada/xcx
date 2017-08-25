@@ -42,7 +42,7 @@ public class AdminServiceImpl  implements IAdminService {
 	@Transactional
 	public void addAdmin(Map<String, Object> map) {
 		String level=map.get("level")==null?null:map.get("level").toString();
-		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+		if(StringUtils.isBlank(level)||(!level.equals("1")&&!level.equals("2"))){
 			throw new BizException("430", "无法添加权限用户");
 		}
 		if(StringUtils.isBlank(map.get("account"))||StringUtils.isBlank(map.get("pwd"))||StringUtils.isBlank(map.get("name"))){
@@ -77,7 +77,8 @@ public class AdminServiceImpl  implements IAdminService {
 				map.put("storeId",map.get("id"));
 				adminDao.addAdmin(map);
 			}
-			
+		}catch (BizException e) {
+			throw new BizException("430", "名字已存在");
 		}catch (Exception e) {
 			throw new BizException("430", "新增管理员失败");
 		}
@@ -86,7 +87,7 @@ public class AdminServiceImpl  implements IAdminService {
 	@Override
 	public void updatePwd(Map<String, Object> map) {
 		String level=map.get("level")==null?null:map.get("level").toString();
-		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+		if(StringUtils.isBlank(level)||(!level.equals("1")&&!level.equals("2"))){
 			throw new BizException("430", "无限权限修改用户密码");
 		}
 		if(StringUtils.isBlank(map.get("pwd"))){
@@ -106,7 +107,7 @@ public class AdminServiceImpl  implements IAdminService {
 	@Override
 	public void delAdmin(Map<String, Object> map) {
 		String level=map.get("level")==null?null:map.get("level").toString();
-		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+		if(StringUtils.isBlank(level)||(!level.equals("1")&&!level.equals("2"))){
 			throw new BizException("430", "无限权限删除用户");
 		}
 		
@@ -117,7 +118,7 @@ public class AdminServiceImpl  implements IAdminService {
 			
 			adminDao.delAdmin(map);
 		}catch (Exception e) {
-			throw new BizException("430", "修改密码失败");
+			throw new BizException("430", "删除用户失败");
 		}
 	}
 	
@@ -131,7 +132,7 @@ public class AdminServiceImpl  implements IAdminService {
 	@Override
 	public List<Admin> getAdminList(Map<String, Object> map) {
 		String level=map.get("level")==null?null:map.get("level").toString();
-		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+		if(StringUtils.isBlank(level)||(!level.equals("1")&&!level.equals("2"))){
 			throw new BizException("430", "无限权限");
 		}
 		List<Admin> adminList = adminDao.getAdminList(map);
@@ -144,10 +145,6 @@ public class AdminServiceImpl  implements IAdminService {
 	
 	@Override
 	public Admin loginAdmin(Map<String, Object> map) {
-		String level=map.get("level")==null?null:map.get("level").toString();
-		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
-			throw new BizException("430", "无权限");
-		}
 		if(StringUtils.isBlank(map.get("account"))||StringUtils.isBlank(map.get("pwd"))){
 			throw new BizException("430", "请输入正确的帐号和密码");
 		}

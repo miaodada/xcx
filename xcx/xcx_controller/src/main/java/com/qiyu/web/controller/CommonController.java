@@ -105,18 +105,25 @@ public class CommonController {
 
 					if (result != null && result.getData() != null) {
 						admin = (Admin)result.getData();
+						// 存储登录的员工信息
+						request.getSession().setAttribute("admin", admin);
+						request.getSession().setMaxInactiveInterval(30*60);
+						
+						result.setCode(Response.LOGIN_SUCESS.getErrorCode());
+						result.setMessage(Response.LOGIN_SUCESS.getMsg());
+						
+						
+						String reslutJSON = JSONObject.toJSONString(result);
+						response.getWriter().write(reslutJSON);
 					}
-					// 存储登录的员工信息
-					request.getSession().setAttribute("admin", admin);
-					request.getSession().setMaxInactiveInterval(30*60);
-				   System.out.println("---------xcx登录id"+ "---------"+request.getSession().getId()+"-------------------");
-					
-					result.setCode(Response.LOGIN_SUCESS.getErrorCode());
-					result.setMessage(Response.LOGIN_SUCESS.getMsg());
-					
-					
-					String reslutJSON = JSONObject.toJSONString(result);
-					response.getWriter().write(reslutJSON);
+					else{
+						result.setCode(Response.LOGIN_FAILURE.getErrorCode());
+						result.setMessage(Response.LOGIN_FAILURE.getMsg());
+						
+						
+						String reslutJSON = JSONObject.toJSONString(result);
+						response.getWriter().write(reslutJSON);
+					}
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error(e.getMessage(), e);
@@ -170,18 +177,21 @@ public class CommonController {
 						user.setId( Long.valueOf(((Map<String, Object>) result.getData()).get("id").toString()));
 						user.setName( ((Map<String, Object>) result.getData()).get("name").toString());
 						user.setHeadImg( ((Map<String, Object>) result.getData()).get("headImg").toString());
+						// 存储登录的员工信息
+						request.getSession().setAttribute("user", user);
+						request.getSession().setMaxInactiveInterval(30*60);
+						result.setCode(Response.LOGIN_SUCESS.getErrorCode());
+						result.setMessage(Response.LOGIN_SUCESS.getMsg());
+						String reslutJSON = JSONObject.toJSONString(result);
+						response.getWriter().write(reslutJSON);
+					}else{
+						result.setCode(Response.LOGIN_FAILURE.getErrorCode());
+						result.setMessage(Response.LOGIN_FAILURE.getMsg());
+						
+						
+						String reslutJSON = JSONObject.toJSONString(result);
+						response.getWriter().write(reslutJSON);
 					}
-					// 存储登录的员工信息
-					request.getSession().setAttribute("user", user);
-					request.getSession().setMaxInactiveInterval(30*60);
-				   System.out.println("---------xcx登录id"+ "---------"+request.getSession().getId()+"-------------------");
-					
-					result.setCode(Response.LOGIN_SUCESS.getErrorCode());
-					result.setMessage(Response.LOGIN_SUCESS.getMsg());
-					
-					
-					String reslutJSON = JSONObject.toJSONString(result);
-					response.getWriter().write(reslutJSON);
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error(e.getMessage(), e);
@@ -191,7 +201,7 @@ public class CommonController {
 	}
 	
 	
-	@RequestMapping("/api")
+	@RequestMapping("/userApi")
 	@SuppressWarnings("unchecked")
 	public void find(HttpServletRequest request, String method, String param, HttpServletResponse response) {
 		logger.info("----------------------------api.do---START----------------------------------------");
@@ -202,7 +212,33 @@ public class CommonController {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setContentType("text/html;charset=UTF-8");
 		try {
-			if (sessionJudge(request, response, params)) {
+			if (sessionJudge(request, response, params,1)) {
+				String[] methods = method.split("/");
+				String serviceName = methods[0] + "Service";
+				String methodName = methods[1];
+				responseData(serviceName,methodName,params,response,param);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage(), e);
+		}
+		logger.info("----------------------------api.do---END----------------------------------------");
+	}
+	
+	
+	
+	@RequestMapping("/adminApi")
+	@SuppressWarnings("unchecked")
+	public void find2(HttpServletRequest request, String method, String param, HttpServletResponse response) {
+		logger.info("----------------------------api.do---START----------------------------------------");
+		logger.info("----------------------------method:" + method + "----"+request.getSession().getAttribute("user")+"------------------------------------");
+		logger.info("----------------------------param:" + param + "----------------------------------------");
+		// 参数转成Map
+		Map<String, Object> params = (Map<String, Object>) ParameterUtil.parseObj(param, Map.class);
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setContentType("text/html;charset=UTF-8");
+		try {
+			if (sessionJudge(request, response, params,2)) {
 				String[] methods = method.split("/");
 				String serviceName = methods[0] + "Service";
 				String methodName = methods[1];
@@ -280,44 +316,75 @@ public class CommonController {
 	 * @param params
 	 * @return
 	 */
-	private boolean sessionJudge(HttpServletRequest request, HttpServletResponse response, Map<String, Object> params){
-		User currUser = null;
+	private boolean sessionJudge(HttpServletRequest request, HttpServletResponse response, Map<String, Object> params,int i ){
 		logger.info("===================================SESSION验证START===========================================");
+		
+		if(i==1){
+			User currUser = null;
 			Object o = request.getSession().getAttribute("user");
 			if(o!=null){
 				currUser=(User)o;
 			}
-			
-//			if(currUser ==null){
-//				
-//				currUser.setId(new Long(94463));
-//				currUser.setPhone("14033338888");
-//				currUser.setCompanyId(new Long(169359));
-//				currUser.setName("xxxxx");
-//				currUser.setLoginUserId(new Long(94463));
-//			}
-		try {
-			
-			if(currUser != null){
-				params.put("userId", currUser.getId());
-//				params.put("phone", currUser.getPhone()); 
-//				params.put("companyId", currUser.getCompanyId()); 
-//				params.put("userName", currUser.getName());
-//				params.put("userHeadImg", currUser.getUserHeadImg());
-			}else{
-				Result result = new Result();
-				result.setCode(Response.LOGIN_FAILURE.getErrorCode());
-				result.setMessage("登录超时!请重新登录");
-				String reslutJSON = JSONObject.toJSONString(result);
-				try {
-					response.getWriter().write(reslutJSON);
-					return false;
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			if(currUser ==null){
+				currUser=new User();
+				currUser.setId(1l);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			try {
+				
+				if(currUser != null){
+					params.put("userId", currUser.getId());
+				}else{
+					Result result = new Result();
+					result.setCode(Response.LOGIN_FAILURE.getErrorCode());
+					result.setMessage("登录超时!请重新登录");
+					String reslutJSON = JSONObject.toJSONString(result);
+					try {
+						response.getWriter().write(reslutJSON);
+						return false;
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} 
+		if(i==2){
+			Admin currAdmin = null;
+			Object o = request.getSession().getAttribute("admin");
+			if(o!=null){
+				currAdmin=(Admin)o;
+			}
+			if(currAdmin ==null){
+				currAdmin=new Admin();
+				currAdmin.setId(4l);
+				currAdmin.setLevel("2");
+				currAdmin.setBuildingId(22l);
+				currAdmin.setStoreId(0l);
+				currAdmin.setInitUpdate("1");
+			}
+			try {
+				if(currAdmin != null){
+					params.put("adminId", currAdmin.getId());
+					params.put("level", currAdmin.getLevel());
+					params.put("buildingId", currAdmin.getBuildingId());
+					params.put("storeId", currAdmin.getStoreId());
+					params.put("initUpdate", currAdmin.getInitUpdate());
+				}else{
+					Result result = new Result();
+					result.setCode(Response.LOGIN_FAILURE.getErrorCode());
+					result.setMessage("登录超时!请重新登录");
+					String reslutJSON = JSONObject.toJSONString(result);
+					try {
+						response.getWriter().write(reslutJSON);
+						return false;
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return true;
 	}

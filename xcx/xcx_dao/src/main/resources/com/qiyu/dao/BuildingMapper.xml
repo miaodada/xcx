@@ -7,7 +7,7 @@
 			<result column="short_name"  property="shortName"  jdbcType="VARCHAR" />
 			<result column="province"  property="province"    jdbcType="VARCHAR" />
 			<result column="city"     property="city"        jdbcType="VARCHAR" />
-			<result column="business_type"      property="businessType"    jdbcType="INTEGER" />
+			<result column="business_type"      property="businessType"    jdbcType="TINYINT" />
 			<result column="acreagebusiness_time"  property="acreagbusinessTime"    jdbcType="BIGINT" />
 			<result column="start_time"     property="startTime"    jdbcType="BIGINT" />
 			<result column="end_time"    property="endTime"      jdbcType="BIGINT" />

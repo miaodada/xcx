@@ -1,19 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiyu.dao.IStoreDao">
+		<resultMap type="com.qiyu.bean.Store" id="BaseResultMap">
+			<id column="id" property="id" jdbcType="BIGINT" />
+		    <result column="name" property="name" jdbcType="VARCHAR" />
+		    <result column="building_id" property="buildingId" jdbcType="BIGINT" />
+		    <result column="format_type" property="formatType" jdbcType="TINYINT" />
+		    <result column="floor" property="floor" jdbcType="VARCHAR" />
+		    <result column="store_no" property="storeNo" jdbcType="VARCHAR" />
+		    <result column="logo" property="logo" jdbcType="VARCHAR" />
+		    <result column="pic" property="pic" jdbcType="VARCHAR" />
+		    <result column="introduce" property="introduce" jdbcType="VARCHAR" />
+		    <result column="building_name" property="buildingName" jdbcType="VARCHAR" />
+		    <result column="activity_num" property="activityNum" jdbcType="VARCHAR" />
+		    <result column="sign_up_num" property="signUpNum" jdbcType="VARCHAR" />
+		</resultMap>
+		
+		<resultMap type="com.qiyu.bean.Store" id="NewBaseResultMap" extends="BaseResultMap">
+			<collection property="logoList" column="logo" select="getfile"></collection>
+			<collection property="picList" column="pic" select="getfile"></collection>
+		</resultMap>
+		
+				<select id="getfile" parameterType="java.util.Map" resultType="com.qiyu.bean.FileInfo">
+			select id,url from file where find_in_set(id,#{ids})		
+		</select>
+	
 
 	<insert id="addStore" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
-		insert into building(name，building_id) values(#{name},#{buildingId})
+		insert into store(name,building_id) values(#{name},#{buildingId})
 	</insert>
 	
 	
-	<select id="getStore" resultMap="" parameterType="java.util.Map" >
+	<select id="getStore" resultMap="NewBaseResultMap" parameterType="java.util.Map" >
 		select * from store where id={id}
 	
 	
 	</select>
 	
-		<select id="getStoreList" resultMap="" parameterType="java.util.Map" >
+		<select id="getStoreList" resultMap="BaseResultMap" parameterType="java.util.Map" >
 		select s.*,b.name building_name ,count(s.id) activity_num ,sum(JSON_LENGTH(a.sign_up_ids))  sign_up_num from store s 
 			left join building b on s.building_id = b.id 
 			left join activity a on s.id = a.store_id 
@@ -35,6 +59,7 @@
 			<if test="logo !=null"> logo =#{logo}  ,         </if>
 			<if test="pic !=null">  pic =#{pic}, </if>
 			<if test="introduce !=null"> introduce =#{introduce},</if>
+			<if test="level !=null and ( level ==3 or level == '3'"> init_update =1 ,</if>
 			
 		
 		</set>
