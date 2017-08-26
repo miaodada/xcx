@@ -35,9 +35,22 @@ public class Activity implements Serializable {
 	private Store Store ; // 封面配图集合
 	private String buildingLogo ; // 大楼logo
 	private String buildingAdress ; // 大楼地址
+	private String buildingName ; // 大楼名
+	private String storeName ; // 门店名
 	
 	
-	
+	public String getBuildingName() {
+		return buildingName;
+	}
+	public void setBuildingName(String buildingName) {
+		this.buildingName = buildingName;
+	}
+	public String getStoreName() {
+		return storeName;
+	}
+	public void setStoreName(String storeName) {
+		this.storeName = storeName;
+	}
 	public List<FileInfo> getSignUpList() {
 		return signUpList;
 	}
