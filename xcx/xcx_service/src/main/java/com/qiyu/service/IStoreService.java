@@ -17,7 +17,7 @@ public interface IStoreService {
 	void updateStore(Map<String, Object> map);
 	
 	//门店列表
-	List<Store> getStoreList(Map<String, Object> map);
+	Map<String, Object> getStoreList(Map<String, Object> map);
 	
 	//门店详情
 	Store getStore(Map<String, Object> map);

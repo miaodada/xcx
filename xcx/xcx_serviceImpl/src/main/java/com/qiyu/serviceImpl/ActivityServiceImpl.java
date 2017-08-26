@@ -37,6 +37,11 @@ public class ActivityServiceImpl  implements IActivityService {
 
 	@Override
 	public void addActivity(Map<String, Object> map) {
+		
+		if(StringUtils.isBlank(map.get("level"))||!map.get("level").toString().equals(3)){
+			throw new BizException("430", "只有门店才能发布活动");
+		}
+		
 		if(StringUtils.isBlank(map.get("title"))){
 			throw new BizException("430", "主题");
 		}
@@ -70,7 +75,7 @@ public class ActivityServiceImpl  implements IActivityService {
 	@Override
 	public void delActivity(Map<String, Object> map) {
 		String level=map.get("level")==null?null:map.get("level").toString();
-		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+		if(StringUtils.isBlank(level)||(!level.equals("1")&&!level.equals("2"))){
 			throw new BizException("430", "无限权限删除活动");
 		}
 		if(StringUtils.isBlank(map.get("id"))){
@@ -83,7 +88,7 @@ public class ActivityServiceImpl  implements IActivityService {
 	@Override
 	public void updateActivity(Map<String, Object> map) {
 		String level=map.get("level")==null?null:map.get("level").toString();
-		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+		if(StringUtils.isBlank(level)||(!level.equals("1")&&!level.equals("2"))){
 			throw new BizException("430", "无限权限修改活动");
 		}
 		if(StringUtils.isBlank(map.get("id"))){
@@ -112,7 +117,7 @@ public class ActivityServiceImpl  implements IActivityService {
 			throw new BizException("430", "缺少选中活动id");
 		}
 		String level=map.get("level")==null?null:map.get("level").toString();
-		if(StringUtils.isBlank(level)||(!(level.equals("1")&&!level.equals("2")))){
+		if(StringUtils.isBlank(level)||(!level.equals("1")&&!level.equals("2"))){
 			throw new BizException("430", "无限权");
 		}
 		try{

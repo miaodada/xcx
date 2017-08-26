@@ -1,6 +1,8 @@
 package com.qiyu.serviceImpl;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ import com.qiyu.dao.IUserDao;
 import com.qiyu.service.IAdminService;
 import com.qiyu.service.IStoreService;
 import com.qiyu.service.IUserService;
+import com.qiyu.util.common.Pagination;
 import com.qiyu.util.exception.BizException;
 import com.qiyu.util.http.StringUtils;
 
@@ -69,17 +72,28 @@ public class StoreServiceImpl  implements IStoreService {
 
 
 	@Override
-	public List<Store> getStoreList(Map<String, Object> map) {
-		
+	public Map<String, Object> getStoreList(Map<String, Object> map) {
+		Map<String,Object> resultMap = new HashMap<>();
 		String level = map.get("level")==null?null:map.get("level").toString();
 		if(StringUtils.isBlank(level)||!level.equals("1")&&!level.equals("2")){
 			throw  new BizException("430", "无权限");
 		}
 		
-		List<Store> storeList = storeDao.getStoreList(map);
+		
+		int num = storeDao.getStoreListNum(map);
+		 Pagination pg=new Pagination(num,map.get("pageNum"),map.get("pageSize"));
+		 map.put("pageSize", pg.getPageSize());
+		 map.put("startRow", pg.getStartPos());
+		List<Store> storeList = new ArrayList();
+		if(num>0){
+			
+			 storeList = storeDao.getStoreList(map);
+		}
+		resultMap.put("list", storeList);
+		resultMap.put("page", pg);
 		
 		
-		return storeList;
+		return resultMap;
 		
 	}
 

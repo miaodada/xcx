@@ -17,6 +17,7 @@ public class Store implements Serializable {
 	private String name ; // 门店名
 	private String formatType ; // 业态类型
 	private String  floor ; // 楼层
+	private String acreage ; // 面积
 	private String storeNo ; // 编号
 	private String logo ; // 门店LOGO
 	private String pic ; // 门店配图
@@ -28,6 +29,15 @@ public class Store implements Serializable {
 	private List<FileInfo> picList ; // 门店配图
 	
 	
+	
+	
+	
+	public String getAcreage() {
+		return acreage;
+	}
+	public void setAcreage(String acreage) {
+		this.acreage = acreage;
+	}
 	public List<FileInfo> getLogoList() {
 		return logoList;
 	}

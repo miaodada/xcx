@@ -359,7 +359,7 @@ public class CommonController {
 				currAdmin=new Admin();
 				currAdmin.setId(4l);
 				currAdmin.setLevel("2");
-				currAdmin.setBuildingId(22l);
+				currAdmin.setBuildingId(1l);
 				currAdmin.setStoreId(0l);
 				currAdmin.setInitUpdate("1");
 			}

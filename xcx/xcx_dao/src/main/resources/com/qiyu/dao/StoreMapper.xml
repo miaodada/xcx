@@ -5,7 +5,7 @@
 			<id column="id" property="id" jdbcType="BIGINT" />
 		    <result column="name" property="name" jdbcType="VARCHAR" />
 		    <result column="building_id" property="buildingId" jdbcType="BIGINT" />
-		    <result column="format_type" property="formatType" jdbcType="TINYINT" />
+		    <result column="format_type" property="formatType" jdbcType="VARCHAR" />
 		    <result column="floor" property="floor" jdbcType="VARCHAR" />
 		    <result column="store_no" property="storeNo" jdbcType="VARCHAR" />
 		    <result column="logo" property="logo" jdbcType="VARCHAR" />
@@ -14,6 +14,7 @@
 		    <result column="building_name" property="buildingName" jdbcType="VARCHAR" />
 		    <result column="activity_num" property="activityNum" jdbcType="VARCHAR" />
 		    <result column="sign_up_num" property="signUpNum" jdbcType="VARCHAR" />
+		    <result column="acreage" property="acreage" jdbcType="VARCHAR" />
 		</resultMap>
 		
 		<resultMap type="com.qiyu.bean.Store" id="NewBaseResultMap" extends="BaseResultMap">
@@ -32,7 +33,9 @@
 	
 	
 	<select id="getStore" resultMap="NewBaseResultMap" parameterType="java.util.Map" >
-		select * from store where id={id}
+		select s.*,b.name building_name from store s
+		left join building b on s.building_id = b.id 
+		 where s.id=#{id} 
 	
 	
 	</select>
@@ -42,9 +45,22 @@
 			left join building b on s.building_id = b.id 
 			left join activity a on s.id = a.store_id 
 		<where>
-			<if test="level !=null and (level == 2 or level =='2')"> and building_id ={buildingId}</if>
-			<if test="keyword !=null and keyword.trim().length()>0">and name like '%#{keyword}%'</if>
-		</where> group by s.id
+			<if test="level !=null and (level == 2 or level =='2')"> and s.building_id =#{buildingId}</if>
+			<if test="keyword !=null and keyword.trim().length()>0">and s.name like '%#{keyword}%'</if>
+		</where>
+		      group by s.id  limit #{startRow},#{pageSize}
+	
+	
+	</select>
+	
+	
+	<select id="getStoreListNum" resultType="java.lang.Integer" parameterType="java.util.Map" >
+		select count(s.id)  sign_up_num from store s 
+		<where>
+			<if test="level !=null and (level == 2 or level =='2')"> and s.building_id =#{buildingId}</if>
+			<if test="keyword !=null and keyword.trim().length()>0">and s.name like '%#{keyword}%'</if>
+		</where>
+
 	
 	
 	</select>
@@ -59,7 +75,6 @@
 			<if test="logo !=null"> logo =#{logo}  ,         </if>
 			<if test="pic !=null">  pic =#{pic}, </if>
 			<if test="introduce !=null"> introduce =#{introduce},</if>
-			<if test="level !=null and ( level ==3 or level == '3'"> init_update =1 ,</if>
 			
 		
 		</set>

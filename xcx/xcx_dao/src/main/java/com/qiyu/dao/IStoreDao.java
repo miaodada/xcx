@@ -41,4 +41,9 @@ public interface IStoreDao {
 	 * @param map
 	 */
 	List<Store> getStoreList(Map<String, Object> map);
+	/**
+	 * 门店列表数量
+	 * @param map
+	 */
+	int getStoreListNum(Map<String, Object> map);
 }
