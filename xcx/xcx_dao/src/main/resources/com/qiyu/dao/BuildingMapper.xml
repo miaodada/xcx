@@ -7,11 +7,12 @@
 			<result column="short_name"  property="shortName"  jdbcType="VARCHAR" />
 			<result column="province"  property="province"    jdbcType="VARCHAR" />
 			<result column="city"     property="city"        jdbcType="VARCHAR" />
-			<result column="business_type"      property="businessType"    jdbcType="TINYINT" />
-			<result column="acreagebusiness_time"  property="acreagbusinessTime"    jdbcType="BIGINT" />
-			<result column="start_time"     property="startTime"    jdbcType="BIGINT" />
-			<result column="end_time"    property="endTime"      jdbcType="BIGINT" />
-			<result column="adress"     property="adress"     jdbcType="VARCHAR" />
+			<result column="acreage"     property="acreage"        jdbcType="VARCHAR" />
+			<result column="business_type"      property="businessType"    jdbcType="VARCHAR" />
+			<result column="business_time"  property="businessTime"    jdbcType="TIMESTAMP" />
+			<result column="start_time"     property="startTime"    jdbcType="TIMESTAMP" />
+			<result column="end_time"    property="endTime"      jdbcType="TIMESTAMP" />
+			<result column="address"     property="address"     jdbcType="VARCHAR" />
 			<result column="parking_lot"     property="parkingLot"    jdbcType="VARCHAR" />
 			<result column="atm"      property="atm"     jdbcType="VARCHAR" />
 			<result column="information_desk"     property="informationDesk"  jdbcType="VARCHAR" />
@@ -23,12 +24,29 @@
 			<result column="logo"        property="logo"   jdbcType="VARCHAR" />
 			<result column="pic"           property="pic"  jdbcType="VARCHAR" />
 			<result column="introduce"      property="introduce"     jdbcType="VARCHAR" />
+			<result column="activity_num"      property="activityNum"     jdbcType="VARCHAR" />
+			<result column="store_num"      property="storeNum"     jdbcType="VARCHAR" />
+			<result column="sign_up_num"      property="signUpNum"     jdbcType="VARCHAR" />
 		</resultMap>
 		
 		<resultMap type="com.qiyu.bean.Building" id="getBuildingtMap" extends="BaseResultMap">
 			<collection property="logoList" column="logo" select="getfile"></collection>
 			<collection property="picList" column="pic" select="getfile"></collection>
 		</resultMap>
+		
+		
+		
+		<sql id="Base_Column_List">
+			b.id,b.name,b.short_name ,b.province,b.city  ,b.business_type,b.acreage,
+			DATE_FORMAT(b.business_time,'%Y-%m-%d %H:%i:%s')business_time,
+			DATE_FORMAT(b.start_time,'%Y-%m-%d %H:%i:%s')start_time,
+			DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i:%s')end_time,
+			b.address,b.parking_lot,b.atm,b.information_desk,b.stair,b.staircase,b.square,b.atrium,
+			b.room_of_mom_and_infant,b.logo,b.pic,
+			b.introduce
+		</sql>
+		
+		
 		
 		<select id="getfile" parameterType="java.util.Map" resultType="com.qiyu.bean.FileInfo">
 			select id,url from file where find_in_set(id,#{ids})		
@@ -49,7 +67,7 @@
 			<if test="businessTime !=null">  business_time =#{businessTime}, </if>
 			<if test="startTime !=null"> start_time =#{startTime},</if>
 			<if test="endTime !=null"> end_time =#{endTime},</if>
-			<if test="adress !=null"> adress =#{adress} ,     </if>
+			<if test="address !=null"> address =#{address} ,     </if>
 			<if test="parkingLot !=null"> parking_lot =#{parkingLot} ,         </if>
 			<if test="atm !=null"> atm  =#{atm} ,                </if>
 			<if test="informationDesk !=null"> information_desk =#{informationDesk} ,  </if>
@@ -64,33 +82,41 @@
 		
 		</set>
 		<where>
-				 	and id ={id}
+				 	and id =#{id}
 		 </where>
 	</update>
 	
 	<select id="getBuilding" parameterType="java.util.Map" resultMap="getBuildingtMap">
-		select id,name,short_name ,province,city  ,business_type,
-			DATE_FORMAT(acreagebusiness_time,'%m-%d-%Y %H-%i-%s')acreagebusiness_time,
-			DATE_FORMAT(start_time,'%m-%d-%Y %H-%i-%s')start_time,
-			DATE_FORMAT(end_time,'%m-%d-%Y %H-%i-%s')end_time,
-			adress,parking_lot,atm,information_desk,stair,staircase,square,atrium,
+		select id,name,short_name ,province,city  ,business_type,acreage,
+			DATE_FORMAT(business_time,'%Y-%m-%d %H:%i:%s')business_time,
+			DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%s')start_time,
+			DATE_FORMAT(end_time,'%Y-%m-%d %H:%i:%s')end_time,
+			address,parking_lot,atm,information_desk,stair,staircase,square,atrium,
 			room_of_mom_and_infant,logo,pic,
-			introduce from building b
+			introduce from building 
 		
-		where id ={id}
+		where id =#{id}
 		
 	
 	</select>
 	
-	
+			<select id="getBuildingListNum" parameterType="java.util.Map" resultType="java.lang.Integer">
+			select count(b.id)   from building b 
+			<where> 
+					<if test="keyword !=null and keyword.trim().length()>0">and name like '%${keyword}%'</if>
+				</where>
+	</select>
+		
+		
 		<select id="getBuildingList" parameterType="java.util.Map" resultMap="getBuildingtMap">
-			select s.*,count(DISTINCT s.id) store_num,count(b.id) activity_num , sum(JSON_LENGTH(a.sign_up_ids)) sign_up_num   from building b 
+			select <include refid="Base_Column_List"/>,count(DISTINCT s.id) store_num,count(a.id) activity_num , ifnull(sum(JSON_LENGTH(a.sign_up_ids)),0) sign_up_num   
+			from building b 
 					left join store s on b.id = s.building_id 
 					left join activity a on b.id = a.building_id
 			<where> 
-					<if test="keyword !=null and keyword.trim().length()>0">and name like '%#{keyword}%'</if>
+					<if test="keyword !=null and keyword.trim().length()>0">and b.name like '%${keyword}%'</if>
 				</where>
-	
+		 group by b.id  limit #{startRow},#{pageSize}
 	</select>
 
 </mapper>

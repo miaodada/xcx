@@ -68,6 +68,6 @@ public interface IActivityService {
      * 活动列表（游客查看列表展示）
      */
 	
-	List<Activity> getUserActivityList(Map<String, Object> map);
+	Map<String, Object> getUserActivityList(Map<String, Object> map);
 	
 }

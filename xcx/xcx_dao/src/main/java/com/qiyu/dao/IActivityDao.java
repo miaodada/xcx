@@ -54,5 +54,21 @@ public interface IActivityDao {
      */
 	List<Activity> getUserActivityList(Map<String, Object> map);
 	
+	/**
+     * 通过活动id 获得报名人id
+     */
+	String getSignUpIds(Map<String, Object> map);
+	
+	/**
+     * 活动列表数量（游客查看列表展示）
+     */
+	int getUserActivityListNum(Map<String, Object> map);
+	
+	/**
+     * 活动列表数量
+     */
+	
+	int getActivityListNum(Map<String, Object> map);
+	
 	
 }

@@ -37,5 +37,11 @@ public interface IBuildingDao {
  	 * 
 	 */
 	List<Building> getBuildingList(Map<String, Object> map);
+	
+	/**
+	 * 大楼列表数量
+ 	 * 
+	 */
+	int getBuildingListNum(Map<String, Object> map);
 }
 

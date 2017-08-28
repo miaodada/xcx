@@ -17,4 +17,9 @@
 		select id ,name ,token ,head_img  headImg from user where token =#{token}
 	</select>
 
+	<select id="getHeadImgs" parameterType="java.util.Map" resultType="com.qiyu.bean.FileInfo">
+			select id, head_img url from user where 
+			id in <foreach collection="userIds" close=")" item="item" separator="," open="(">#{item}</foreach>		
+		</select>
+
 </mapper>

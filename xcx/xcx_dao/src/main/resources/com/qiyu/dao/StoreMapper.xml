@@ -41,7 +41,7 @@
 	</select>
 	
 		<select id="getStoreList" resultMap="BaseResultMap" parameterType="java.util.Map" >
-		select s.*,b.name building_name ,count(s.id) activity_num ,sum(JSON_LENGTH(a.sign_up_ids))  sign_up_num from store s 
+		select s.*,b.name building_name ,count(a.id) activity_num ,ifnull(sum(JSON_LENGTH(a.sign_up_ids)),0)  sign_up_num from store s 
 			left join building b on s.building_id = b.id 
 			left join activity a on s.id = a.store_id 
 		<where>

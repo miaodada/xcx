@@ -32,9 +32,9 @@ public class Activity implements Serializable {
 	private List<FileInfo> picList ; // 活动配图集合
 	private List<FileInfo> coverList ; // 封面配图集合
 	private List<FileInfo> signUpList ; // 报名人头像
-	private Store Store ; // 封面配图集合
+	private Store store ; // 门店实体
 	private String buildingLogo ; // 大楼logo
-	private String buildingAdress ; // 大楼地址
+	private String buildingAddress ; // 大楼地址
 	private String buildingName ; // 大楼名
 	private String storeName ; // 门店名
 	
@@ -63,17 +63,17 @@ public class Activity implements Serializable {
 	public void setBuildingLogo(String buildingLogo) {
 		this.buildingLogo = buildingLogo;
 	}
-	public String getBuildingAdress() {
-		return buildingAdress;
+	public String getBuildingAddress() {
+		return buildingAddress;
 	}
-	public void setBuildingAdress(String buildingAdress) {
-		this.buildingAdress = buildingAdress;
+	public void setBuildingAddress(String buildingAddress) {
+		this.buildingAddress = buildingAddress;
 	}
 	public Store getStore() {
-		return Store;
+		return store;
 	}
 	public void setStore(Store store) {
-		Store = store;
+		this.store = store;
 	}
 	public String getSignUpIds() {
 		return signUpIds;

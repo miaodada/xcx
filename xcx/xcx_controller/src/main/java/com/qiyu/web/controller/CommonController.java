@@ -106,6 +106,7 @@ public class CommonController {
 					if (result != null && result.getData() != null) {
 						admin = (Admin)result.getData();
 						// 存储登录的员工信息
+						admin.setPwd(null);
 						request.getSession().setAttribute("admin", admin);
 						request.getSession().setMaxInactiveInterval(30*60);
 						
@@ -357,9 +358,9 @@ public class CommonController {
 			}
 			if(currAdmin ==null){
 				currAdmin=new Admin();
-				currAdmin.setId(4l);
-				currAdmin.setLevel("2");
-				currAdmin.setBuildingId(1l);
+				currAdmin.setId(1l);
+				currAdmin.setLevel("1");
+				currAdmin.setBuildingId(0l);
 				currAdmin.setStoreId(0l);
 				currAdmin.setInitUpdate("1");
 			}

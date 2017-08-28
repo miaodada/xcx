@@ -26,7 +26,7 @@ public interface IBuildingService {
      * 大楼列表
      */
 	
-	List<Building> getBuildingList(Map<String, Object> map);
+	Map<String, Object> getBuildingList(Map<String, Object> map);
 	
 }
 

@@ -3,6 +3,7 @@ package com.qiyu.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.qiyu.bean.FileInfo;
 import com.qiyu.bean.User;
 
 /**
@@ -32,4 +33,13 @@ public interface IUserDao {
  	 * 
 	 */
 	void updateUser(Map<String, Object> map);
+
+	/**
+	    * 获取图片
+	    * @author 维斯
+	    * @param map
+	    * @return
+	    * 2016年11月4日  下午3:25:04
+	    */
+	List<FileInfo> getHeadImgs(Map<String, Object> map);
 }

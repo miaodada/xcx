@@ -75,13 +75,6 @@ public interface IAdminDao {
 
 	String saveFileInfo(FileInfo fileInfo);
 	
-	/**
-	    * 获取图片
-	    * @author 维斯
-	    * @param map
-	    * @return
-	    * 2016年11月4日  下午3:25:04
-	    */
-	List<FileInfo> getfile(Map<String, Object> map);
+
 
 }

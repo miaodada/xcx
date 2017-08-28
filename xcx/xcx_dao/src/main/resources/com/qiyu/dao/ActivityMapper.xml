@@ -15,6 +15,7 @@
 		    <result column="tag" property="tag" jdbcType="VARCHAR" />
 		    <result column="cover" property="cover" jdbcType="VARCHAR" />
 		    <result column="building_name" property="buildingName" jdbcType="VARCHAR" />
+		    <result column="building_address" property="buildingAddress" jdbcType="VARCHAR" />
 		    <result column="store_name" property="storeName" jdbcType="VARCHAR" />
 		</resultMap>
 		
@@ -37,15 +38,15 @@
 		</sql>
 		
 		<resultMap type="com.qiyu.bean.Activity" id="getUserActivityListMap" extends="BaseResultMap">
-			<result column="building_adress" property="buildingAdress" jdbcType="VARCHAR" />
-			<association property="Store" column="store_id" select="com.qiyu.dao.IStoreDao.getStore"></association>
-			<collection property="picList" column="pic" select="getfile"></collection>
+			<association property="store" column="store_id" select="com.qiyu.dao.IStoreDao.getStore"></association>
+			<collection property="coverList" column="cover" select="getfile"></collection>
 		</resultMap>
 			
 			<resultMap type="com.qiyu.bean.Activity" id="getActivityDetailMap" extends="BaseResultMap">
 			 <result column="building_logo" property="buildingLogo" jdbcType="VARCHAR" />
-			 <result column="building_adress" property="buildingAdress" jdbcType="VARCHAR" />
-			<association property="Store" column="store_id" select="com.qiyu.dao.IStoreDao.getStore"></association>
+			 <result column="sign_up_ids" property="signUpIds" jdbcType="VARCHAR" />
+			 <result column="sign_up_num" property="signUpNum" jdbcType="VARCHAR" />
+			<association property="store" column="store_id" select="com.qiyu.dao.IStoreDao.getStore"></association>
 			<collection property="picList" column="pic" select="getfile"></collection>
 		</resultMap>
 		
@@ -80,14 +81,36 @@
 				<if test="tag !=null"> tag =#{tag}, </if>
 				<if test="cover !=null"> cover =#{cover}, </if>
 				<if test="isTop !=null and (isTop ==1 or isTop =='1')"> is_top =now(), </if>
-				<if test="signUpId !=null"> JSON_ARRAY_APPEND(sign_up_ids, '$',#{signUpId}) </if>
+				<if test="signUpId !=null">sign_up_ids= JSON_ARRAY_APPEND(sign_up_ids, '$',#{signUpId}) </if>
 			</set>	
-			where id =#{id} <if test="level !=null and ( level ==2 or level == '2')"> and building_id =#{buildingId} </if>
+			where id =#{id} 
+			<if test="level !=null and ( level ==2 or level == '2')"> and building_id =#{buildingId} </if>
+			<if test="signUpId !=null"> 
+				and end_time &gt; now()
+				and JSON_CONTAINS(sign_up_ids, &apos;${signUpId}&apos;)=0 
+			</if>
+			
 		</update>
 		
 		<select id="getActivity" parameterType="java.util.Map" resultMap="getActivityMap">
 			select <include refid="Base_Column_List" /> from activity where id =#{id}
 		</select>
+		
+		<select id="getSignUpIds" parameterType="java.util.Map" resultType="java.lang.String">
+			select sign_up_ids from activity where id =#{id} and end_time &gt; now()
+		</select>
+		
+		<select id="getActivityListNum" parameterType="java.util.Map" resultType="java.lang.Integer">
+			select count(a.id)
+				from activity a 
+				<where>
+				  <if test="level !=null and ( level ==2 or level == '2')"> and a.building_id =#{buildingId} </if>
+				<if test="type !=null and (type ==1 or type =='1')">and a.end_time >now()</if>
+				<if test="type !=null and (type ==2 or type =='2')">and a.end_time &lt;now()</if>
+			</where>
+
+		</select>
+		
 		
 		<select id="getActivityList" parameterType="java.util.Map" resultMap="getActivityMap">
 			select <include refid="Base_Column_List_new" />,JSON_LENGTH(a.sign_up_ids) sign_up_num,b.name building_name,s.name store_name from activity a 
@@ -98,23 +121,34 @@
 				<if test="type !=null and (type ==1 or type =='1')">and a.end_time >now()</if>
 				<if test="type !=null and (type ==2 or type =='2')">and a.end_time &lt;now()</if>
 			</where>
-			
+			limit #{startRow},#{pageSize}
 		</select>
 		
 		
 		<select id="getActivityDetail" parameterType="java.util.Map" resultMap="getActivityDetailMap">
-			select <include refid="Base_Column_List_new" />,JSON_LENGTH(a.sign_up_ids) sign_up_num ,f.url, building_logo ,b.building_adress
+			select <include refid="Base_Column_List_new" />,JSON_LENGTH(a.sign_up_ids) sign_up_num ,f.url building_logo ,b.address building_address
 				from activity a 
 				left join building b on a.building_id =b.id
 				left join file f on f.id = b.logo
+				where a.id =#{id}
 		</select>
 		
 		
+		<select id="getUserActivityListNum" parameterType="java.util.Map" resultType="java.lang.Integer">
+			select count(a.id)
+				from activity a 
+				
+				where building_id =#{buildingId}     and a.end_time >now()
+
+		</select>
+		
 		<select id="getUserActivityList" parameterType="java.util.Map" resultMap="getUserActivityListMap">
-			select <include refid="Base_Column_List_new" />,b.building_adress
+			select <include refid="Base_Column_List_new" />,b.address building_address
 				from activity a 
 				left join building b on a.building_id =b.id
-				order by is_top desc ,end_time desc
+				
+				where building_id =#{buildingId}     and a.end_time >now()
+				order by is_top desc ,end_time limit #{startRow},#{pageSize}
 		</select>
 
 </mapper>

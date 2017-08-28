@@ -1,6 +1,8 @@
 package com.qiyu.serviceImpl;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -14,8 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qiyu.bean.Activity;
 import com.qiyu.bean.FileInfo;
 import com.qiyu.dao.IActivityDao;
-import com.qiyu.dao.IAdminDao;
+import com.qiyu.dao.IUserDao;
 import com.qiyu.service.IActivityService;
+import com.qiyu.util.common.Pagination;
 import com.qiyu.util.exception.BizException;
 import com.qiyu.util.http.StringUtils;
 
@@ -30,10 +33,9 @@ public class ActivityServiceImpl  implements IActivityService {
 	@Autowired
 	private IActivityDao activityDao;
 
+
 	@Autowired
-	private IAdminDao adminDao;
-
-
+	private IUserDao userDao;
 
 	@Override
 	public void addActivity(Map<String, Object> map) {
@@ -136,15 +138,18 @@ public class ActivityServiceImpl  implements IActivityService {
 		if(StringUtils.isBlank(map.get("id"))){
 			throw new BizException("430", "缺少选中活动id");
 		}
-		Activity activity = activityDao.getActivity(map);
-		if(activity ==null){
-			throw new BizException("430", "该活动已过期");
+		if(StringUtils.isBlank(map.get("userId"))){
+			throw new BizException("400", "请登陆");
 		}
-		String signUpIds = activity.getSignUpIds();
+		
+
+		String signUpIds = activityDao.getSignUpIds(map);
 		if(!StringUtils.isBlank(signUpIds)){
 			if(Pattern.matches("(^|^.*[^0-9]{1})("+userId+"{1})($|[^0-9]{1}.*$)", signUpIds)){
 				return;
 			}
+		}else if (StringUtils.isBlank(signUpIds)){
+			throw new BizException("430", "活动已过期");
 		}
 		map.put("signUpId", Long.valueOf(userId));
 		activityDao.updateActivity(map);
@@ -155,14 +160,30 @@ public class ActivityServiceImpl  implements IActivityService {
 	@Override
 	public List<Activity> getActivityList(Map<String, Object> map) {
 		
+		String level=map.get("level")==null?null:map.get("level").toString();
+		if(StringUtils.isBlank(level)||(!level.equals("1")&&!level.equals("2"))){
+			throw new BizException("430", "无限权");
+		}
+		
 		//type 1.过期；2.没过期
 		String type=map.get("type")==null?null:map.get("type").toString();
 		if(StringUtils.isBlank(type)){
 			throw new BizException("430", "缺少参数type");
 		}
+		Map<String,Object> resultMap = new HashMap<>();
+		List<Activity> activityList = new ArrayList<>();
 		
+		int num = activityDao.getActivityListNum(map);
 		
-		List<Activity> activityList = activityDao.getActivityList(map);
+		Pagination pg=new Pagination(num,map.get("pageNum"),map.get("pageSize"));
+		 map.put("pageSize", pg.getPageSize());
+		 map.put("startRow", pg.getStartPos());
+		
+		if(num>0){
+			 activityList = activityDao.getActivityList(map);
+		}
+		resultMap.put("list", activityList);
+		resultMap.put("page", pg);	
 
 		return activityList;
 		
@@ -176,6 +197,9 @@ public class ActivityServiceImpl  implements IActivityService {
 		if(StringUtils.isBlank(id)){
 			throw new BizException("430", "缺少参数id");
 		}
+		if(!StringUtils.isBlank(map.get("level"))){
+			throw new BizException("430", "请用游客账号");
+		}
 		
 		
 		Activity activity = activityDao.getActivityDetail(map);
@@ -183,13 +207,21 @@ public class ActivityServiceImpl  implements IActivityService {
 		if(activity==null){
 			throw new BizException("430", "活动已结束");
 		}
-		if(activity.getSignUpNum()>0){
-			String[] fileIds = activity.getSignUpIds()
+		if(activity.getSignUpNum()!=null&&activity.getSignUpNum()>0){
+			String[] userIds = activity.getSignUpIds()
 							.substring(1, activity.getSignUpIds().length()-1)
 							.replace(" ", "").split(",");
-			map.put("fileIds", fileIds);
-			List<FileInfo> getfile = adminDao.getfile(map);
-			activity.setSignUpList(getfile);
+			//只展示前10个报名人的头像
+			if(userIds!=null &&userIds.length>10){
+				String[] tenIds =new String[10];
+				System.arraycopy(userIds, 0, tenIds, 0, 9);
+				map.put("userIds", tenIds);
+			}else{
+				
+				map.put("userIds", userIds);
+			}
+			List<FileInfo> Imgs = userDao.getHeadImgs(map);
+			activity.setSignUpList(Imgs);
 		}
 
 		return activity;
@@ -197,27 +229,43 @@ public class ActivityServiceImpl  implements IActivityService {
 	}
 	
 	@Override
-	public List<Activity> getUserActivityList(Map<String, Object> map) {
-		String building=map.get("building")==null?null:map.get("building").toString();
+	public Map<String, Object> getUserActivityList(Map<String, Object> map) {
+		String buildingId=map.get("buildingId")==null?null:map.get("buildingId").toString();
 		String userId=map.get("userId")==null?null:map.get("userId").toString();
-		if(StringUtils.isBlank(building)){
-			throw new BizException("430", "缺少参数building");
+		if(StringUtils.isBlank(buildingId)){
+			throw new BizException("430", "缺少参数buildingId");
 		}
 		
-		List<Activity> userActivityList = activityDao.getUserActivityList(map);
+		Map<String,Object> resultMap = new HashMap<>();
 		
-		for (Activity activity : userActivityList) {
-			String signUpIds = activity.getSignUpIds();
-			if(!StringUtils.isBlank(signUpIds)&&signUpIds.length()>2){
-				if(Pattern.matches("(^|^.*[^0-9]{1})("+userId+"{1})($|[^0-9]{1}.*$)", signUpIds)){
-					activity.setIsSsignUp("1");
-				}else{
+		List<Activity> userActivityList = new ArrayList();
+		//分页
+		int num = activityDao.getUserActivityListNum(map);
+		Pagination pg=new Pagination(num,map.get("pageNum"),map.get("pageSize"));
+		 map.put("pageSize", pg.getPageSize());
+		 map.put("startRow", pg.getStartPos());
+		if(num>0){
+			//列表
+			userActivityList = activityDao.getUserActivityList(map);
+			for (Activity activity : userActivityList) {
+				String signUpIds = activity.getSignUpIds();
+				if(!StringUtils.isBlank(signUpIds)&&signUpIds.length()>2&&!StringUtils.isBlank(userId)){
+					if(Pattern.matches("(^|^.*[^0-9]{1})("+userId+"{1})($|[^0-9]{1}.*$)", signUpIds)){
+						activity.setIsSsignUp("1");
+					}else{
+						activity.setIsSsignUp("0");
+					}
+				}else {
 					activity.setIsSsignUp("0");
 				}
 			}
 		}
 		
-		return userActivityList;
+		
+		resultMap.put("list", userActivityList);
+		resultMap.put("page", pg);	
+		
+		return resultMap;
 		
 	}
 	
@@ -225,9 +273,11 @@ public class ActivityServiceImpl  implements IActivityService {
 	
 	
 	public static void main(String[] args) {
-		String s= "xxxxx.cc";
-		String substring = s.substring(s.lastIndexOf(".")+1,s.length());
-		System.out.println(substring.toString());
+		int[] s = {1,2,3,4,5,6,7,8,9,10,1,2,3,4};
+		int[] ss= new int[10];
+		System.arraycopy(s, 0, s, 0, 10);
+		System.out.println(ss[9]);
+		
 	}
 }
 

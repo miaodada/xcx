@@ -23,7 +23,7 @@ public class Building implements Serializable {
 	private String  businessTime ; // 开业时间
 	private String startTime ; // 营业时间(开始)
 	private String endTime ; // 营业时间（结束）
-	private String adress ; // 项目地址
+	private String address ; // 项目地址
 	private String parkingLot ; // 车位
 	private String atm ; // ATM
 	private String informationDesk ; // 服务台
@@ -41,6 +41,11 @@ public class Building implements Serializable {
 	
 	private List<FileInfo> logoList ; // 大楼Logo集合
 	private List<FileInfo> picList ; // 大楼配图集合
+	
+	
+	
+	
+	
 	
 	public Long getId() {
 		return id;
@@ -111,11 +116,11 @@ public class Building implements Serializable {
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
-	public String getAdress() {
-		return adress;
+	public String getAddress() {
+		return address;
 	}
-	public void setAdress(String adress) {
-		this.adress = adress;
+	public void setAddress(String address) {
+		this.address = address;
 	}
 	public String getParkingLot() {
 		return parkingLot;
@@ -194,6 +199,26 @@ public class Building implements Serializable {
 	}
 	public void setSignUpNum(String signUpNum) {
 		this.signUpNum = signUpNum;
+	}
+
+	public List<FileInfo> getLogoList() {
+		return logoList;
+	}
+
+	public void setLogoList(List<FileInfo> logoList) {
+		this.logoList = logoList;
+	}
+
+	public List<FileInfo> getPicList() {
+		return picList;
+	}
+
+	public void setPicList(List<FileInfo> picList) {
+		this.picList = picList;
+	}
+
+	public void setBusinessTime(String businessTime) {
+		this.businessTime = businessTime;
 	}
 	
 	
