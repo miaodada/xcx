@@ -46,7 +46,7 @@
 			left join activity a on s.id = a.store_id 
 		<where>
 			<if test="level !=null and (level == 2 or level =='2')"> and s.building_id =#{buildingId}</if>
-			<if test="keyword !=null and keyword.trim().length()>0">and s.name like '%#{keyword}%'</if>
+			<if test="keyword !=null and keyword.trim().length()>0">and s.name like '%${keyword}%'</if>
 		</where>
 		      group by s.id  limit #{startRow},#{pageSize}
 	
@@ -58,7 +58,7 @@
 		select count(s.id)  sign_up_num from store s 
 		<where>
 			<if test="level !=null and (level == 2 or level =='2')"> and s.building_id =#{buildingId}</if>
-			<if test="keyword !=null and keyword.trim().length()>0">and s.name like '%#{keyword}%'</if>
+			<if test="keyword !=null and keyword.trim().length()>0">and s.name like '${keyword}%'</if>
 		</where>
 
 	

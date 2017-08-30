@@ -74,6 +74,16 @@ public interface IAdminDao {
 	    */
 
 	String saveFileInfo(FileInfo fileInfo);
+
+	
+	/**
+	    * 管理员列表数量
+	    * @author 维斯
+	    * @param map
+	    * @return
+	    * 2016年11月4日  下午3:25:04
+	    */
+	int getAdminListNum(Map<String, Object> map);
 	
 
 

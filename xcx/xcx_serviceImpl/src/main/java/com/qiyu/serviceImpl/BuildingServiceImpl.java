@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,9 +112,6 @@ public class BuildingServiceImpl  implements IBuildingService {
 	
 	
 	public static void main(String[] args) {
-		String s= "     1         ";
-		int length = s.trim().length();
-		
-		 System.out.println(length);
+		System.out.println(Pattern.matches("[0-9]+", "1231.2"));
 	}
 }

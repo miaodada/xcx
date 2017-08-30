@@ -1,6 +1,8 @@
 package com.qiyu.serviceImpl;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,12 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qiyu.bean.Admin;
+import com.qiyu.bean.Store;
 import com.qiyu.dao.IAdminDao;
 import com.qiyu.dao.IBuildingDao;
 import com.qiyu.dao.IStoreDao;
 import com.qiyu.dao.IUserDao;
 import com.qiyu.service.IAdminService;
 import com.qiyu.service.IUserService;
+import com.qiyu.util.common.Pagination;
 import com.qiyu.util.exception.BizException;
 import com.qiyu.util.http.StringUtils;
 
@@ -130,15 +134,26 @@ public class AdminServiceImpl  implements IAdminService {
 	
 	
 	@Override
-	public List<Admin> getAdminList(Map<String, Object> map) {
+	public Map<String, Object> getAdminList(Map<String, Object> map) {
 		String level=map.get("level")==null?null:map.get("level").toString();
 		if(StringUtils.isBlank(level)||(!level.equals("1")&&!level.equals("2"))){
 			throw new BizException("430", "无限权限");
 		}
-		List<Admin> adminList = adminDao.getAdminList(map);
+		Map<String,Object> resultMap = new HashMap<>();
+		List<Admin> adminList =new ArrayList<>();
+		//分页
+		int num = adminDao.getAdminListNum(map);
+		Pagination pg=new Pagination(num,map.get("pageNum"),map.get("pageSize"));
+		 map.put("pageSize", pg.getPageSize());
+		 map.put("startRow", pg.getStartPos());
+		if(num>0){
+			//列表
+			 adminList = adminDao.getAdminList(map);
+		}
+		resultMap.put("list", adminList);
+		resultMap.put("page", pg);
 		
-		
-		return adminList;
+		return resultMap;
 		
 		
 	}

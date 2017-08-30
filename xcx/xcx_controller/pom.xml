@@ -232,7 +232,7 @@
 
 
 	<build>
-		<finalName>hrm</finalName>
+		<finalName>xcx</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

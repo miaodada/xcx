@@ -158,7 +158,7 @@ public class ActivityServiceImpl  implements IActivityService {
 	
 	
 	@Override
-	public List<Activity> getActivityList(Map<String, Object> map) {
+	public Map<String, Object> getActivityList(Map<String, Object> map) {
 		
 		String level=map.get("level")==null?null:map.get("level").toString();
 		if(StringUtils.isBlank(level)||(!level.equals("1")&&!level.equals("2"))){
@@ -185,7 +185,7 @@ public class ActivityServiceImpl  implements IActivityService {
 		resultMap.put("list", activityList);
 		resultMap.put("page", pg);	
 
-		return activityList;
+		return resultMap;
 		
 	}
 	

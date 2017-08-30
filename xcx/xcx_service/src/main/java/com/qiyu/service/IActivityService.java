@@ -58,7 +58,7 @@ public interface IActivityService {
 	 /**
      * 活动列表
      */
-	List<Activity> getActivityList(Map<String, Object> map);
+	Map<String, Object> getActivityList(Map<String, Object> map);
 	
 	 /**
      * 获取活动详（游客点击查看）

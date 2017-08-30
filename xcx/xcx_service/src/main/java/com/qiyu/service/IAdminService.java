@@ -54,7 +54,7 @@ public interface IAdminService {
 	    * @return
 	    * 2016年11月4日  下午3:25:04
 	    */
-	List<Admin> getAdminList(Map<String, Object> map);
+	Map<String, Object> getAdminList(Map<String, Object> map);
 	/**
 	    * 管理员登录
 	    * @author 维斯
