@@ -73,7 +73,7 @@ public interface IAdminDao {
 	    * 2016年11月4日  下午3:25:04
 	    */
 
-	String saveFileInfo(FileInfo fileInfo);
+	void saveFileInfo(FileInfo fileInfo);
 
 	
 	/**

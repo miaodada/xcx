@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
@@ -62,6 +63,13 @@ public class CommonController {
 	
 
 	private static Logger logger = Logger.getLogger(CommonController.class);
+	
+	private static List<String>  fileTypes = new  ArrayList<>();
+	static{
+		fileTypes.add("jpg");
+		fileTypes.add("png");
+		fileTypes.add("gif");
+	}
 	
 	@RequestMapping("/adminLogin")
 	@SuppressWarnings("unchecked")
@@ -395,21 +403,22 @@ public class CommonController {
 	
 	@RequestMapping("/uploadFileForApp")
 	@SuppressWarnings("unchecked")
+	@Transactional
 	public void uploadFileForApp(HttpServletRequest request, String method, String param, HttpServletResponse response) {
 		logger.info("----------------------------app调用上传接口uploadFileForApp:START----------------------------------------");
 		logger.info("----------------------------method:" + method + "----------------------------------------");
 		logger.info("----------------------------param:" + param + "----------------------------------------");
 		// 参数转成Map
 		Object admin = request.getSession().getAttribute("admin");
-		if(admin==null){
-			throw new BizException("430", "无权限");
-		}
+//		if(admin==null){
+//			throw new BizException("430", "无权限");
+//		}
 		try {
 			JSONObject resultJson = new JSONObject();
 			String fileIds =null;
 				CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
 				// 过滤掉不允许的文件类型
-				String[] errorType = { ".jpg", ".png", ".gif"};
+				
 				if (multipartResolver.isMultipart(request)) {
 					// 转换成多部分request
 					MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
@@ -423,83 +432,79 @@ public class CommonController {
 						if (multipartFile != null) {
 							// 取得当前上传文件的文件名称
 							String originalFilename = multipartFile.getOriginalFilename();
-							//String fileType = originalFilename.split("\\.", 2)[1];
 							// 获取图片扩展名
 			       	    	String fileType = originalFilename.substring(originalFilename.lastIndexOf(".")+1,originalFilename.length());
 							if (originalFilename.trim() != "") {
-								for (int temp = 0; temp < errorType.length; temp++) {
 									// 文件名的第一个.后面的为文件后缀
-									if (!fileType.endsWith(errorType[temp])) {
+									if (fileTypes.indexOf(fileType)==-1) {
 										throw new IOException("只能上传jpg/png/gif文件");
 									}
+								String curDate = DateUtil.getCurDate("yyyyMMdd");
+								String file_location = PropertiesUtil.getPropertyByKey("file_adress")+curDate+"/";
+								File dir = new File(file_location);
+								if (!dir.exists() && !dir.isDirectory()) {
+									//目录不存在则创建一个
+									dir.mkdir();
 								}
-							String curDate = DateUtil.getCurDate("yyyymmdd");
-							String file_location = PropertiesUtil.getPropertyByKey("file_location_app")+curDate+"/";
-							File dir = new File(file_location);
-							if (!dir.exists() && !dir.isDirectory()) {
-								//目录不存在则创建一个
-								dir.mkdir();
-							}
-							
-							String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-							String fileName = "File" + uuid +"."+ fileType;
-							
-							File localFile = new File(file_location+fileName); //保存路径
-							//1.先将原文件上传至服务器(目前文件与项目在同一台服务器上)
-							multipartFile.transferTo(localFile);
-							
-							BufferedImage bufImage = ImageIO.read(new FileInputStream(localFile));
-							
-							//3.准备将文件信息保存到数据库表中
-							String httpFilePath = PropertiesUtil.getPropertyByKey("file_url");
-							
-							
-							//生成压缩图
-							
-					        String newFileName ="YS_"+fileName;
-					        //拼接后台文件名称
-					        if(fileName.contains(".png")){
-					        	newFileName = fileName.replace(".png", ".jpg");
-					        }
-					        long size = multipartFile.getSize();
-					        double scale = 1.0d ;
-					        if(size >= 200*1024){
-					            if(size > 0){
-					                scale = (200*1024f) / size  ;
-					            }
-					        }
-					        
-					        
-					        //拼接文件路劲
-					        try {
-					            //added by chenshun 2016-3-22 注释掉之前长宽的方式，改用大小
-//					            Thumbnails.of(filePathName).size(width, height).toFile(thumbnailFilePathName);
-					            if(size < 200*1024){
-					                Thumbnails.of(file_location+fileName).scale(1f).outputFormat("jpg").toFile(file_location+newFileName);
-					            }else{
-					                Thumbnails.of(file_location+fileName).scale(1f).outputQuality(scale).outputFormat("jpg").toFile(file_location+newFileName);
-					            }
-					            
-					        } catch (Exception e1) {
-					           throw new BizException("430", "图片压缩失败");
-					        }
-			                
-					      //4.拼接成全路径
-							String userFileUrl = httpFilePath+curDate+newFileName;
-							fileInfo.setUrl(userFileUrl); //访问路径
-		                	//文件信息保存到库中
-		                	String fileId = adminDao.saveFileInfo(fileInfo);
-		                	if(fileIds==null){
-		                		fileIds=fileId;
-		                	}else{
-		                		fileIds=fileIds+","+fileId;
-		                	}
-		                	resultJson.put("code", 0);
-		                	resultJson.put("data", fileIds);
-		                    resultJson.put("message", "上传图片成功！");
+								
+								String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+								String fileName = "File" + uuid +"."+ fileType;
+								
+								File localFile = new File(file_location+fileName); //保存路径
+								//1.先将原文件上传至服务器(目前文件与项目在同一台服务器上)
+								multipartFile.transferTo(localFile);
+								
+								BufferedImage bufImage = ImageIO.read(new FileInputStream(localFile));
+								
+								
+								
+								//生成压缩图
+								
+						        String newFileName ="YS_"+fileName;
+						        //拼接后台文件名称
+						        if(fileName.contains(".png")){
+						        	newFileName = fileName.replace(".png", ".jpg");
+						        }
+						        long size = multipartFile.getSize();
+						        double scale = 1.0d ;
+						        if(size >= 200*1024){
+						            if(size > 0){
+						                scale = (200*1024f) / size  ;
+						            }
+						        }
+						        
+						        
+						        //拼接文件路劲
+						        try {
+						            //added by chenshun 2016-3-22 注释掉之前长宽的方式，改用大小
+		//					            Thumbnails.of(filePathName).size(width, height).toFile(thumbnailFilePathName);
+						            if(size < 200*1024){
+						                Thumbnails.of(file_location+fileName).scale(1f).outputFormat("jpg").toFile(file_location+newFileName);
+						            }else{
+						                Thumbnails.of(file_location+fileName).scale(1f).outputQuality(scale).outputFormat("jpg").toFile(file_location+newFileName);
+						            }
+						            //删除源文件
+						            localFile.delete();
+						        } catch (Exception e1) {
+						           throw new BizException("430", "图片压缩失败");
+						        }
+				                
+						      //4.拼接成全路径
+								String userFileUrl = file_location+newFileName;
+								fileInfo.setUrl(userFileUrl); //访问路径
+			                	//文件信息保存到库中
+			                	  adminDao.saveFileInfo(fileInfo);
+			                	if(fileIds==null){
+			                		fileIds=fileInfo.getId().toString();
+			                	}else{
+			                		fileIds=fileIds+","+fileInfo.getId().toString();
+			                	}
 		        			}
 						}
 					}
+					resultJson.put("code", 0);
+					resultJson.put("data", fileIds);
+					resultJson.put("message", "上传图片成功！");
 					try {
 		            	response.setContentType("text/json;charset=utf-8");
 		    			response.getWriter().print(resultJson.toString());
