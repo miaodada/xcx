@@ -186,9 +186,11 @@ public class CommonController {
 						user.setId( Long.valueOf(((Map<String, Object>) result.getData()).get("id").toString()));
 						user.setName( ((Map<String, Object>) result.getData()).get("name").toString());
 						user.setHeadImg( ((Map<String, Object>) result.getData()).get("headImg").toString());
+						user.setSessionKey( ((Map<String, Object>) result.getData()).get("sessionKey").toString());
+						user.setToken( ((Map<String, Object>) result.getData()).get("token").toString());
 						// 存储登录的员工信息
 						request.getSession().setAttribute("user", user);
-						request.getSession().setMaxInactiveInterval(30*60);
+						request.getSession().setMaxInactiveInterval(120*60);
 						result.setCode(Response.LOGIN_SUCESS.getErrorCode());
 						result.setMessage(Response.LOGIN_SUCESS.getMsg());
 						String reslutJSON = JSONObject.toJSONString(result);
@@ -334,10 +336,10 @@ public class CommonController {
 			if(o!=null){
 				currUser=(User)o;
 			}
-			if(currUser ==null){
-				currUser=new User();
-				currUser.setId(1l);
-			}
+//			if(currUser ==null){
+//				currUser=new User();
+//				currUser.setId(1l);
+//			}
 			try {
 				
 				if(currUser != null){
@@ -444,7 +446,7 @@ public class CommonController {
 								File dir = new File(file_location);
 								if (!dir.exists() && !dir.isDirectory()) {
 									//目录不存在则创建一个
-									dir.mkdir();
+									dir.mkdirs();
 								}
 								
 								String uuid = UUID.randomUUID().toString().replaceAll("-", "");
@@ -484,6 +486,7 @@ public class CommonController {
 						                Thumbnails.of(file_location+fileName).scale(1f).outputQuality(scale).outputFormat("jpg").toFile(file_location+newFileName);
 						            }
 						            //删除源文件
+						            Thread.sleep(1000);
 						            localFile.delete();
 						        } catch (Exception e1) {
 						           throw new BizException("430", "图片压缩失败");

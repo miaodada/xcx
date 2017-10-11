@@ -17,6 +17,10 @@ public class User implements Serializable {
 	
 	private String token ; //微信授权码
 	private String headImg ; //头像
+	
+	private String sessionKey;//微信动态码，具有时效性，
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -40,6 +44,12 @@ public class User implements Serializable {
 	}
 	public void setHeadImg(String headImg) {
 		this.headImg = headImg;
+	}
+	public String getSessionKey() {
+		return sessionKey;
+	}
+	public void setSessionKey(String sessionKey) {
+		this.sessionKey = sessionKey;
 	}
 	
 	

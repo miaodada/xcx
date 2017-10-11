@@ -76,7 +76,7 @@
 	
 		<update id="updateAdmin" parameterType="java.util.Map" >
 			update admin  set name=#{name}
-			<if test="level !-null and (level ==2 or level =='2')">,init_update =1</if>
+			<if test="level !=null and (level ==2 or level =='2')">,init_update =1</if>
 			 where building_id=#{id} and store_id#{storeId}
 	</update>
 	

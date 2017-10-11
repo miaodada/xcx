@@ -1,6 +1,11 @@
 package com.qiyu.util.http;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,6 +16,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.qiyu.util.exception.BizException;
+
 import net.sf.json.JSONObject;
 
 
@@ -141,21 +149,6 @@ public class StringUtils extends org.apache.commons.lang.StringUtils{
 	  return (isBlank(str) ? "" : str.toString().trim());
 	}
 	
-	/**
-	 * 将 Strig  进行 BASE64 编码
-	 * @param str [要编码的字符串]
-	 * @param bf  [true|false,true:去掉结尾补充的'=',false:不做处理]
-	 * @return
-	 */
-    public static String getBASE64(String str,boolean...bf) { 
-       if (StringUtils.isBlank(str)) return null; 
-       String base64 = new sun.misc.BASE64Encoder().encode(str.getBytes()) ;
-       //去掉 '='
-       if(isBlank(bf) && bf[0]){
-    	   base64 = base64.replaceAll("=", "");
-       }
-       return base64;
-    }
 
     /**
      * 把Map转换成get请求参数类型,如 {"name"=20,"age"=30} 转换后变成 name=20&age=30
@@ -327,6 +320,59 @@ public class StringUtils extends org.apache.commons.lang.StringUtils{
     
     public static String conversionCharacter(String str){
     	return str.replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;").replace("'", "&#39;");
+    }
+    
+    /**
+     * 
+     * @Title: doGet 
+     * @Description: GET请求，获得返回数据
+     * @param urlStr 请求路径
+     * @return String
+     * @throws
+     */
+    public static String doGet(String urlStr) {
+        URL url = null;
+        HttpURLConnection conn = null;
+        InputStream is = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            url = new URL(urlStr);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(20000);
+            conn.setConnectTimeout(20000);
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("accept", "*/*");
+            conn.setRequestProperty("connection", "Keep-Alive");
+            if (conn.getResponseCode() == 200) {
+                is = conn.getInputStream();
+                baos = new ByteArrayOutputStream();
+                int len = -1; 
+                byte[] buf = new byte[128];
+
+                while ((len = is.read(buf)) != -1) {
+                    baos.write(buf, 0, len);
+                }
+                baos.flush();
+                return baos.toString();
+            } else {
+                throw new RuntimeException(" responseCode is not 200 ... ");
+            }
+        } catch (Exception e) {
+        	throw new BizException("430","凭证获取信息用户openId和sessionKey失败");
+        } finally {
+            try {
+                if (is != null)
+                    is.close();
+            } catch (IOException e) {
+            }
+            try {
+                if (baos != null)
+                    baos.close();
+            } catch (IOException e) {
+            }
+            conn.disconnect();
+        }
+
     }
 }
 

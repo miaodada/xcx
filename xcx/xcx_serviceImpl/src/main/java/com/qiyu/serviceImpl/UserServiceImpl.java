@@ -1,6 +1,7 @@
 package com.qiyu.serviceImpl;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSONObject;
 import com.qiyu.bean.User;
 import com.qiyu.dao.IUserDao;
 import com.qiyu.service.IUserService;
@@ -45,6 +47,16 @@ public class UserServiceImpl  implements IUserService {
 			throw new BizException("430", "缺少name");
 		}
 		try{
+			String urlStr = "https://api.weixin.qq.com/sns/jscode2session?appid=wx20587440d6232a35&secret=f5e4c27ca3ec5079b7bb6d3b2791f91f&"
+							+ "js_code="+map.get("token").toString()+"&grant_type=authorization_code";
+			String doGet = StringUtils.doGet(urlStr);
+			JSONObject jsonObject = JSONObject.parseObject(doGet);
+			if(!StringUtils.isBlank(jsonObject.get("errcode"))){
+				throw new BizException("430", "调问微信接口失败");
+			}
+			map.put("token", jsonObject.getString("openid")) ;  
+			resultMap.put("sessionKey", jsonObject.getString("session_key")) ;   
+			resultMap.put("token", jsonObject.getString("openid")) ;   
 			
 		
 			 List<User> users = userDao.getUser(map);
@@ -83,5 +95,13 @@ public class UserServiceImpl  implements IUserService {
 		
 		return resultMap;
 		
+	}
+	
+	public static void main(String[] args) {
+		UserServiceImpl u = new UserServiceImpl();
+		Map<String,Object> map = new HashMap<>();
+		map.put("name", "123123");
+		map.put("token", "123123");
+		u.loginUser(map);
 	}
 }
